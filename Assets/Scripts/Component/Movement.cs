@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DefaultNamespace.Component
 {
-  public class MovementComponentBase : ComponentBase, IUpdate, IFixedUpdate
+  public class Movement : ComponentBase, IUpdate, IFixedUpdate
   {
     private float _speed;
     private float _rotationSpeed;

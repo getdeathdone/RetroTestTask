@@ -37,7 +37,7 @@ namespace DefaultNamespace.Manager
       hero.name = GameConstance.PLAYER_NAME;
 
       hero.SetInject(_areaManager, _inputHandler);
-      hero.AddComponent<MovementComponentBase>();
+      hero.AddComponent<Movement>();
       
       _heroBases.Add(hero);
     }
