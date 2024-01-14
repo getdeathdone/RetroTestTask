@@ -1,4 +1,5 @@
 using DefaultNamespace.Handler;
+using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 using Zenject;
 

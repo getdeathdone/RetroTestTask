@@ -1,4 +1,3 @@
-using DefaultNamespace.Handler;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
 using UnityEngine;
@@ -7,22 +6,23 @@ namespace DefaultNamespace.Component
 {
   public class Movement : ComponentBase, IUpdate, IFixedUpdate
   {
+    protected Transform _transform;
+    
     private float _speed;
     private float _rotationSpeed;
-    
-    private Transform _transform;
     private Rigidbody _rigidbody;
     private AreaManager _areaManager;
-    private InputHandler _inputHandler;
+
+    protected virtual Vector3 MovementDirection => Vector3.zero;
+    protected virtual int Rotate => 0;
 
     public override void Initialize()
     {
-      _speed = ComponentOwner.Speed;
-      _rotationSpeed = ComponentOwner.RotationSpeed;
+      _speed = ComponentOwner.HeroData.Speed;
+      _rotationSpeed = ComponentOwner.HeroData.RotationSpeed;
       _transform = ComponentOwner.transform;
       _rigidbody = ComponentOwner.Rigidbody;
       _areaManager = ComponentOwner.AreaManager;
-      _inputHandler = ComponentOwner.InputHandler;
 
       IsInitialized = true;
     }
@@ -40,22 +40,12 @@ namespace DefaultNamespace.Component
 
     private void MovementUpdate()
     {
-      Vector3 movementDirection = _transform.TransformDirection(_inputHandler.Direction);
-
-      _rigidbody.AddForce(movementDirection * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+      _rigidbody.AddForce(MovementDirection * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
     }
 
     private void RotateUpdate()
     {
-      if (_inputHandler.RotateLeftHeld)
-      {
-        _transform.Rotate(Vector3.up, -_rotationSpeed * Time.fixedDeltaTime);
-      }
-
-      if (_inputHandler.RotateRightHeld)
-      {
-        _transform.Rotate(Vector3.up, _rotationSpeed * Time.fixedDeltaTime);
-      }
+      _transform.Rotate(Vector3.up, Rotate * _rotationSpeed * Time.fixedDeltaTime);
     }
 
     private void ClampMovementToBounds()

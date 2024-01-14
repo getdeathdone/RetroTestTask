@@ -1,9 +1,11 @@
+using System;
+using DefaultNamespace.Interfaces;
 using UnityEditor;
 using UnityEngine;
 
 namespace DefaultNamespace.Manager
 {
-  public class AreaManager : MonoBehaviour
+  public class AreaManager : MonoBehaviour, IInject
   {
     [SerializeField]
     private float _offset;
@@ -12,6 +14,7 @@ namespace DefaultNamespace.Manager
 
     public float Radius => _sphereCollider.radius - _offset;
     public Vector3 CenterPoint => _sphereCollider.center;
+    public Type Type => GetType();
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

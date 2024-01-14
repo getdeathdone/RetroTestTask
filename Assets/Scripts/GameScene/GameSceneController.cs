@@ -8,23 +8,23 @@ namespace DefaultNamespace.GameScene
   {
     private UIManager _uiManager;
     private CameraManager _cameraManager;
-    private SpawnHandler _spawnHandler;
+    private SpawnManager _spawnManager;
 
     [Inject]
     private void Construct(
       UIManager inputManager,
       CameraManager cameraManager,
-      SpawnHandler spawnHandler)
+      SpawnManager spawnManager)
     {
       _uiManager = inputManager;
       _cameraManager = cameraManager;
-      _spawnHandler = spawnHandler;
+      _spawnManager = spawnManager;
     }
 
     private void Awake()
     {
       _uiManager.Initialize();
-      _spawnHandler.Initialize();
+      _spawnManager.Initialize();
       _cameraManager.Initialize();
     }
   }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
-using DefaultNamespace.Handler;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
+using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
 namespace DefaultNamespace.Hero
@@ -15,29 +15,21 @@ namespace DefaultNamespace.Hero
     private readonly List<IFixedUpdate> _fixedUpdates = new List<IFixedUpdate>();
     
     [SerializeField]
-    private float _speed;
-    [SerializeField] 
-    private float _rotationSpeed;
-    
-    [SerializeField]
     private Rigidbody _rigidbody;
-    
-    private AreaManager _areaManager;
-    private InputHandler _inputHandler;
 
-    public AreaManager AreaManager => _areaManager;
-    public InputHandler InputHandler => _inputHandler;
+    private HeroData _heroData;
+    private AreaManager _areaManager;
+
     public Rigidbody Rigidbody => _rigidbody;
-    
-    public float Speed => _speed;
-    public float RotationSpeed => _rotationSpeed;
-    
-    public void SetInject(
-      AreaManager areaManager, 
-      InputHandler inputHandler)
+    public HeroData HeroData => _heroData;
+    public AreaManager AreaManager => _areaManager;
+
+    public virtual HeroType Type => HeroType.None;
+
+    public virtual void SetInject(List<IInject> injects)
     {
-      _areaManager = areaManager;
-      _inputHandler = inputHandler;
+      _heroData = SetInject<HeroData>(injects);
+      _areaManager = SetInject<AreaManager>(injects);
     }
 
     public void Initialize()
@@ -108,6 +100,11 @@ namespace DefaultNamespace.Hero
       T component = new T();
       _componentsMap.Add(component);
       return this;
+    }
+    
+    protected T SetInject<T>(List<IInject> injects) where T: IInject
+    {
+      return (T)injects.Find(c => c.Type == typeof(T));
     }
 
     public bool IsInitialized

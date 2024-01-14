@@ -1,5 +1,7 @@
+using DefaultNamespace.Controller;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
+using Zenject;
 
 namespace DefaultNamespace.Manager
 {
@@ -13,12 +15,20 @@ namespace DefaultNamespace.Manager
     private float _cameraHeight = 0.125f;
 
     private Transform _player;
+    private PlayerController _playerController;
     private bool _isInitialized;
     public bool IsInitialized => _isInitialized;
   
+    [Inject]
+    private void Construct(
+      PlayerController playerController)
+    {
+      _playerController = playerController;
+    }
+    
     public void Initialize()
     {
-      _player = GameObject.Find(GameConstance.PLAYER_NAME).transform;
+      _player = _playerController.Player.transform;
       _isInitialized = true;
     }
 

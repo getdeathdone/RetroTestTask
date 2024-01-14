@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace DefaultNamespace.ScriptableObjects
 {
-  [CreateAssetMenu(menuName = "ScriptableObject/GameConfig")]
+  [CreateAssetMenu(fileName = "GameConfig", menuName = "ScriptableObject/GameConfig")]
   public class GameConfig : ScriptableObject
   {
     [Header("Player Stats")]
