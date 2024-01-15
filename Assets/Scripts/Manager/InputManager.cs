@@ -11,6 +11,7 @@ namespace DefaultNamespace.Manager
     private const bool INVERT_Y_AXIS = true;
     private const bool INVERT_X_AXIS = false;
     private const float LOOK_SENSITIVITY = 1f;
+    private const float SMOOTHING_FACTOR = 0.15f;
 
     private readonly UIManager _uiManager;
     private readonly GameController _gameController;
@@ -27,28 +28,46 @@ namespace DefaultNamespace.Manager
     private Vector3 DirectionKeyboard => Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
     public Vector3 Direction => PlatformManager.IS_MOBILE ? DirectionJoystick : DirectionKeyboard;
 
-    public float RotateHorizontalInput => UseRotateKeyboard ? GetRotationKeyboard() : GetLookInputsHorizontal();
+    public float RotateHorizontalInput => UseRotateKeyboard ? GetRotationKeyboard() : GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameHorizontal, INVERT_X_AXIS);
     public bool UseRotateKeyboard => GetRotationKeyboard() != 0;
     public Type Type => GetType();
 
     private bool _useRotateKeyboard;
+    private float _smoothedTouchInput;
 
     private int GetRotationKeyboard()
     {
-      bool rotateLeftHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateLeftButton : Input.GetKey(KeyCode.Q);
-      bool rotateRightHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateRightButton : Input.GetKey(KeyCode.E);
+      bool rotateLeftHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateLeftButton.IsButtonHeld : Input.GetKey(KeyCode.Q);
+      bool rotateRightHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateRightButton.IsButtonHeld : Input.GetKey(KeyCode.E);
 
       return rotateLeftHeld && !rotateRightHeld ? -1 : !rotateLeftHeld && rotateRightHeld ? 1 : 0;
     }
 
     public float GetLookInputsVertical()
     {
-      return GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameVertical, INVERT_Y_AXIS);
-    }
+      if(!PlatformManager.IS_MOBILE)
+      {
+        return GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameVertical, INVERT_Y_AXIS);
+      } else
+      {
+        if (Input.touchCount <= 0)
+        {
+          return 0f;
+        }
 
-    private float GetLookInputsHorizontal()
-    {
-      return GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameHorizontal, INVERT_X_AXIS);
+        Touch touch = Input.GetTouch(0);
+          
+        if (touch.position.x > Screen.width / 2 && touch.phase == TouchPhase.Moved)
+        {
+          float touchInput = touch.deltaPosition.x * Time.deltaTime;
+          _smoothedTouchInput = Mathf.Lerp(_smoothedTouchInput, touchInput, SMOOTHING_FACTOR);
+
+          return _smoothedTouchInput;
+        }
+
+        return 0f;
+      }
+
     }
 
     private float GetMouseOrStickLookAxis (string mouseInputName, bool invertAxis)

@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace.Controller;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
@@ -8,12 +7,10 @@ namespace DefaultNamespace.Manager
 {
   public class CameraManager : MonoBehaviour, IInitialize
   {
-    private readonly Vector3 _offset = new Vector3(0, 0, -1 / 4f);
+    private readonly Vector3 _offset = new Vector3(0, 0.2f, 0);
 
     [SerializeField]
     private float _smoothSpeed = 0.125f;
-    [SerializeField]
-    private float _cameraHeight = 0.125f;
 
     private Transform _playerTransform;
     private InputManager _inputManager;
@@ -59,7 +56,7 @@ namespace DefaultNamespace.Manager
         return;
       }
     
-      Vector3 desiredPosition = _playerTransform.position + _offset + Vector3.up * _cameraHeight;
+      Vector3 desiredPosition = _playerTransform.position + _offset;
       transform.position = Vector3.Lerp(transform.position, desiredPosition, _smoothSpeed);
     
       float targetRotationY = _playerTransform.rotation.eulerAngles.y;
@@ -69,8 +66,9 @@ namespace DefaultNamespace.Manager
 
       if (transform.position == desiredPosition)
       {
-        _isCameraToPlayer = true;
         transform.SetParent(_playerTransform);
+        
+        _isCameraToPlayer = true;
       }
     }
   }
