@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace DefaultNamespace.Controller
@@ -16,6 +17,11 @@ namespace DefaultNamespace.Controller
     void RestartGame()
     {
       SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void StartGame()
+    {
+      Cursor.lockState = CursorLockMode.Locked;
     }
   }
 }

@@ -14,7 +14,8 @@ namespace DefaultNamespace.Component
     private AreaManager _areaManager;
 
     protected virtual Vector3 MovementDirection => Vector3.zero;
-    protected virtual int Rotate => 0;
+    protected virtual float Rotate => 0;
+    protected virtual bool UseSlowdown => false;
 
     public override void Initialize()
     {
@@ -29,13 +30,13 @@ namespace DefaultNamespace.Component
 
     public void Update()
     {
+      RotateUpdate();
       ClampMovementToBounds();
     }
 
     public void FixedUpdate()
     {
       MovementUpdate();
-      RotateUpdate();
     }
 
     private void MovementUpdate()
@@ -45,7 +46,7 @@ namespace DefaultNamespace.Component
 
     private void RotateUpdate()
     {
-      _transform.Rotate(Vector3.up, Rotate * _rotationSpeed * Time.fixedDeltaTime);
+      _transform.Rotate(Vector3.up, Rotate * _rotationSpeed * (UseSlowdown ? Time.fixedDeltaTime * InputMovement.KEYBOARD_SLOWDOWN : 1));
     }
 
     private void ClampMovementToBounds()

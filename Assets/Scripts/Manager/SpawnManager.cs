@@ -61,7 +61,7 @@ namespace DefaultNamespace.Manager
       var player = SpawnHero(HeroType.Player, _spawnPlayerPos.position);
       _playerController.SetPlayer((HeroPlayer)player);
       
-      player.name = GameConstance.PLAYER_NAME;
+      player.name = GameConstants.PLAYER_NAME;
     }
 
     private void SpawnEnemy()
@@ -72,7 +72,7 @@ namespace DefaultNamespace.Manager
         var enemy = SpawnHero(HeroType.Enemy, point.position);
         _enemyController.AddEnemy((HeroEnemy)enemy);
 
-        enemy.name = $"{GameConstance.ENEMY_NAME} {index}";
+        enemy.name = $"{GameConstants.ENEMY_NAME} {index}";
       }
     }
 
