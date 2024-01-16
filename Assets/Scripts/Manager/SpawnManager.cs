@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
-using DefaultNamespace.Controller;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.ScriptableObjects;
@@ -11,13 +10,8 @@ using Zenject;
 
 namespace DefaultNamespace.Manager
 {
-  public class SpawnManager : MonoBehaviour, IInitialize
+  public class SpawnManager : MonoBehaviour
   {
-    [SerializeField]
-    private Transform _spawnPlayerPos;
-    [SerializeField]
-    private List<Transform> _spawnEnemyPos;
-
     [SerializeField]
     private HeroTypeDictionary _heroPrefabs = new HeroTypeDictionary();
     [SerializeField]
@@ -27,57 +21,44 @@ namespace DefaultNamespace.Manager
 
     private AreaManager _areaManager;
     private InputManager _inputManager;
-    private PlayerController _playerController;
-    private EnemyController _enemyController;
+
+    private Vector3 GenerateRandomPositionInAreaRadius => GenerateRandomPositionInCircle(_areaManager.Radius);
 
     [Inject]
     private void Construct (
       AreaManager areaManager, 
-      InputManager inputManager, 
-      PlayerController playerController,
-      EnemyController enemyController)
+      InputManager inputManager)
     {
       _areaManager = areaManager;
       _inputManager = inputManager;
-      _playerController = playerController;
-      _enemyController = enemyController;
     }
 
-    public void Initialize()
+    public HeroPlayer SpawnPlayer()
     {
-      SpawnPlayer();
-      SpawnEnemy();
-
-      foreach (var VARIABLE in _heroBases)
-      {
-        VARIABLE.Initialize();
-      }
-
-      IsInitialized = true;
-    }
-
-    private void SpawnPlayer()
-    {
-      var player = SpawnHero(HeroType.Player, _spawnPlayerPos.position);
-      _playerController.SetPlayer((HeroPlayer)player);
-      
+      var player = SpawnHero(HeroType.Player, GenerateRandomPositionInAreaRadius);
       player.name = GameConstants.PLAYER_NAME;
+
+      return (HeroPlayer)player;
     }
 
-    private void SpawnEnemy()
+    public HeroEnemy SpawnEnemy (HeroType enemyType)
     {
-      for (int index = 0; index < _spawnEnemyPos.Count; index++)
+      if (enemyType == HeroType.Player)
       {
-        Transform point = _spawnEnemyPos[index];
-        var enemy = SpawnHero(HeroType.Enemy, point.position);
-        _enemyController.AddEnemy((HeroEnemy)enemy);
-
-        enemy.name = $"{GameConstants.ENEMY_NAME} {index}";
+        return null;
       }
+      
+      return (HeroEnemy)SpawnHero(enemyType, GenerateRandomPositionInAreaRadius);
     }
 
     private HeroBase SpawnHero (HeroType heroType, Vector3 position)
     {
+      if (heroType == HeroType.None)
+      {
+        Debug.LogWarning("Spawn HeroType.None");
+        return null;
+      }
+      
       var heroBase = _heroPrefabs[heroType];
       var hero = Instantiate(heroBase, position, heroBase.transform.rotation);
 
@@ -104,8 +85,11 @@ namespace DefaultNamespace.Manager
         case HeroType.Player:
           injects.Add(_inputManager);
           break;
-        case HeroType.Enemy:
+        
+        case HeroType.EnemyRed:
+        case HeroType.EnemyBlue:
           break;
+        
         default:
           throw new ArgumentOutOfRangeException(nameof(heroType), heroType, null);
       }
@@ -120,9 +104,12 @@ namespace DefaultNamespace.Manager
         case HeroType.Player:
           BuildPlayer();
           break;
-        case HeroType.Enemy:
+        
+        case HeroType.EnemyRed:
+        case HeroType.EnemyBlue:
           BuildEnemy();
           break;
+          
         default:
           throw new ArgumentOutOfRangeException(nameof(heroType), heroType, null);
       }
@@ -136,10 +123,15 @@ namespace DefaultNamespace.Manager
       {}
     }
 
-    public bool IsInitialized
+    private Vector3 GenerateRandomPositionInCircle(float radius)
     {
-      get;
-      private set;
+      float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+      float distance = UnityEngine.Random.Range(0f, radius);
+      
+      float spawnX = distance * Mathf.Cos(angle);
+      float spawnZ = distance * Mathf.Sin(angle);
+
+      return new Vector3(spawnX, 0f, spawnZ);
     }
 
     [Serializable]

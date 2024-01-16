@@ -5,6 +5,14 @@ namespace DefaultNamespace
   {
     None,
     Player,
+    EnemyRed,
+    EnemyBlue
+  }
+  
+  public enum HeroSide
+  {
+    None,
+    Player,
     Enemy
   }
 }

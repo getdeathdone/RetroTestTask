@@ -67,7 +67,6 @@ namespace DefaultNamespace.Manager
 
         return 0f;
       }
-
     }
 
     private float GetMouseOrStickLookAxis (string mouseInputName, bool invertAxis)

@@ -13,18 +13,16 @@ namespace DefaultNamespace.Hero
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
     private readonly List<IUpdate> _updates = new List<IUpdate>();
     private readonly List<IFixedUpdate> _fixedUpdates = new List<IFixedUpdate>();
-    
-    [SerializeField]
-    private Rigidbody _rigidbody;
 
+    [SerializeField]
+    private HeroType _type;
+    
     private HeroData _heroData;
     private AreaManager _areaManager;
-
-    public Rigidbody Rigidbody => _rigidbody;
     public HeroData HeroData => _heroData;
     public AreaManager AreaManager => _areaManager;
-
-    public virtual HeroType Type => HeroType.None;
+    public HeroType Type => _type;
+    public virtual HeroSide Side => HeroSide.None;
 
     public virtual void SetInject(List<IInject> injects)
     {

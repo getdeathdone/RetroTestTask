@@ -1,5 +1,6 @@
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DefaultNamespace.Component
@@ -22,7 +23,7 @@ namespace DefaultNamespace.Component
       _speed = ComponentOwner.HeroData.Speed;
       _rotationSpeed = ComponentOwner.HeroData.RotationSpeed;
       _transform = ComponentOwner.transform;
-      _rigidbody = ComponentOwner.Rigidbody;
+      _rigidbody = ComponentOwner.transform.AddComponent<Rigidbody>();
       _areaManager = ComponentOwner.AreaManager;
 
       IsInitialized = true;

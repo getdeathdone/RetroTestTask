@@ -8,8 +8,7 @@ namespace DefaultNamespace.Hero
   {
     private InputManager _inputManager;
     public InputManager InputManager => _inputManager;
-
-    public override HeroType Type => HeroType.Player;
+    public override HeroSide Side => HeroSide.Player;
 
     public override void SetInject (List<IInject> injects)
     {
