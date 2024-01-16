@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef28e702036944b6b1f16afc7b7d1ea9, type: 3}
-  m_Name: PlayerData
+  m_Name: EnemyRedData
   m_EditorClassIdentifier: 
   _speed: 10
   _rotationSpeed: 200
-  _health: 100
+  _health: 50
