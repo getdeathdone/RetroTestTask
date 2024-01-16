@@ -1,3 +1,5 @@
+using System;
+using RotaryHeart.Lib.SerializableDictionary;
 using UnityEngine;
 
 namespace DefaultNamespace.ScriptableObjects
@@ -5,25 +7,50 @@ namespace DefaultNamespace.ScriptableObjects
   [CreateAssetMenu(fileName = "GameConfig", menuName = "ScriptableObject/GameConfig")]
   public class GameConfig : ScriptableObject
   {
-    [Header("Projectile")]
-    public float projectileChanceToBounce = 0.3f;
-    public float projectileBounceStrengthGain = 10f;
-    public float projectileBounceHealthGainPercentage = 0.5f;
+    [SerializeField]
+    private HeroConfigDictionary _heroConfigDictionary = new HeroConfigDictionary();
+    
+    public HeroConfig GetHeroConfig (HeroType heroType)
+    {
+      if (_heroConfigDictionary.TryGetValue(heroType, out HeroConfig config))
+      {
+        return config;
+      }
 
-    [Header("Ultimate Ability")]
-    public int ultimateAbilityThreshold = 100;
+      Debug.LogError("HeroConfig not found for HeroType: " + heroType);
+      return null;
+    }
+    
+    public class HeroConfig
+    {
+      [Header("Common Parameters")]
+      [SerializeField]
+      private float _projectileSpeed;
+      [SerializeField]
+      private float _projectileLifetime;
 
-    [Header("Player Movement")]
-    public float teleportEdgeDistance = 2f;
+      [Header("Rebound Parameters")]
+      [SerializeField]
+      private float _reboundChance;
+      [SerializeField]
+      private float _additionalStrengthOnRebound;
+      [SerializeField]
+      private float _additionalHealthOnRebound;
 
-    [Header("Enemy Stats")]
-    public int initialBlueEnemyHealth = 100;
-    public int initialRedEnemyHealth = 50;
+      [Header("Ultimate Ability Parameters")]
+      [SerializeField]
+      private float _ultimateAbilityRadius;
 
-    [Header("Enemy Spawn")]
-    public float initialSpawnInterval = 10f;
-    public float minSpawnInterval = 6f;
-    public int maxEnemiesOnMap = 30;
-    public float spawnIntervalDecreaseRate = 2f;
+      public float ProjectileSpeed => _projectileSpeed;
+      public float ProjectileLifetime => _projectileLifetime;
+      public float ReboundChance => _reboundChance;
+      public float AdditionalStrengthOnRebound => _additionalStrengthOnRebound;
+      public float AdditionalHealthOnRebound => _additionalHealthOnRebound;
+      public float UltimateAbilityRadius => _ultimateAbilityRadius;
+    }
+    
+    [Serializable]
+    public class HeroConfigDictionary : SerializableDictionaryBase<HeroType, HeroConfig>
+    {}
   }
 }

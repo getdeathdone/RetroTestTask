@@ -42,7 +42,7 @@ namespace DefaultNamespace.Manager
         return;
       }
       
-      _mCameraVerticalAngle += _inputManager.GetLookInputsVertical() * _playerController.Player.HeroData.RotationSpeed;
+      _mCameraVerticalAngle += _inputManager.GetLookInputsVertical() * InputManager.ROTATION_INPUT_SPEED;
       
       _mCameraVerticalAngle = Mathf.Clamp(_mCameraVerticalAngle, -89f, 89f);
       

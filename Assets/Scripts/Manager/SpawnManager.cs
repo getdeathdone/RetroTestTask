@@ -36,7 +36,7 @@ namespace DefaultNamespace.Manager
     public HeroPlayer SpawnPlayer()
     {
       var player = SpawnHero(HeroType.Player, GenerateRandomPositionInAreaRadius);
-      player.name = GameConstants.PLAYER_NAME;
+      player.name = $"{player.Type}";
 
       return (HeroPlayer)player;
     }

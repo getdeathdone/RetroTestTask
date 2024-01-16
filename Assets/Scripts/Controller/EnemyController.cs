@@ -93,7 +93,7 @@ namespace DefaultNamespace.Controller
       _enemies.Add(enemy);
       int index = _enemies.IndexOf(enemy);
 
-      enemy.name = $"{GameConstants.ENEMY_NAME} {index} {enemyType}";
+      enemy.name = $"{enemyType} {index}";
       
       OnSpawnEnemy?.Invoke(enemy);
     }

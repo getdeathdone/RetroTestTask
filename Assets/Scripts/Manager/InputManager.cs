@@ -8,11 +8,17 @@ namespace DefaultNamespace.Manager
 {
   public class InputManager : object, IInject
   {
+    public const int ROTATION_INPUT_SPEED = 200;
+    public const float KEYBOARD_SLOWDOWN = 0.2f;
+    
     private const bool INVERT_Y_AXIS = true;
     private const bool INVERT_X_AXIS = false;
     private const float LOOK_SENSITIVITY = 1f;
     private const float SMOOTHING_FACTOR = 0.15f;
 
+    private const string MOUSE_AXIS_NAME_VERTICAL = "Mouse Y";
+    private const string MOUSE_AXIS_NAME_HORIZONTAL = "Mouse X";
+    
     private readonly UIManager _uiManager;
     private readonly GameController _gameController;
 
@@ -28,7 +34,7 @@ namespace DefaultNamespace.Manager
     private Vector3 DirectionKeyboard => Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
     public Vector3 Direction => PlatformManager.IS_MOBILE ? DirectionJoystick : DirectionKeyboard;
 
-    public float RotateHorizontalInput => UseRotateKeyboard ? GetRotationKeyboard() : GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameHorizontal, INVERT_X_AXIS);
+    public float RotateHorizontalInput => UseRotateKeyboard ? GetRotationKeyboard() : GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_HORIZONTAL, INVERT_X_AXIS);
     public bool UseRotateKeyboard => GetRotationKeyboard() != 0;
     public Type Type => GetType();
 
@@ -47,7 +53,7 @@ namespace DefaultNamespace.Manager
     {
       if(!PlatformManager.IS_MOBILE)
       {
-        return GetMouseOrStickLookAxis(GameConstants.k_MouseAxisNameVertical, INVERT_Y_AXIS);
+        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_VERTICAL, INVERT_Y_AXIS);
       } else
       {
         if (Input.touchCount <= 0)

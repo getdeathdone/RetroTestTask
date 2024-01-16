@@ -10,18 +10,14 @@ namespace DefaultNamespace.Component
     protected Transform _transform;
     
     private float _speed;
-    private float _rotationSpeed;
     private Rigidbody _rigidbody;
     private AreaManager _areaManager;
 
     protected virtual Vector3 MovementDirection => Vector3.zero;
-    protected virtual float Rotate => 0;
-    protected virtual bool UseSlowdown => false;
 
     public override void Initialize()
     {
       _speed = ComponentOwner.HeroData.Speed;
-      _rotationSpeed = ComponentOwner.HeroData.RotationSpeed;
       _transform = ComponentOwner.transform;
       _rigidbody = ComponentOwner.transform.AddComponent<Rigidbody>();
       _areaManager = ComponentOwner.AreaManager;
@@ -29,9 +25,8 @@ namespace DefaultNamespace.Component
       IsInitialized = true;
     }
 
-    public void Update()
+    public virtual void Update()
     {
-      RotateUpdate();
       ClampMovementToBounds();
     }
 
@@ -43,11 +38,6 @@ namespace DefaultNamespace.Component
     private void MovementUpdate()
     {
       _rigidbody.AddForce(MovementDirection * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
-    }
-
-    private void RotateUpdate()
-    {
-      _transform.Rotate(Vector3.up, Rotate * _rotationSpeed * (UseSlowdown ? Time.fixedDeltaTime * InputMovement.KEYBOARD_SLOWDOWN : 1));
     }
 
     private void ClampMovementToBounds()
