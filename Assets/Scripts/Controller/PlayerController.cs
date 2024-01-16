@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;

@@ -32,6 +32,7 @@ namespace DefaultNamespace.Manager
     public void Initialize()
     {
       _playerTransform = _playerController.Player.transform;
+      
       _isInitialized = true;
     }
 

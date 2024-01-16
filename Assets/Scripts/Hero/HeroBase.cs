@@ -8,8 +8,10 @@ using UnityEngine;
 
 namespace DefaultNamespace.Hero
 {
-  public class HeroBase : MonoBehaviour, IInitialize
+  public abstract class HeroBase : MonoBehaviour, IInitialize
   {
+    public event Action<HeroBase> OnDeath;
+    
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
     private readonly List<IUpdate> _updates = new List<IUpdate>();
     private readonly List<IFixedUpdate> _fixedUpdates = new List<IFixedUpdate>();
@@ -19,6 +21,11 @@ namespace DefaultNamespace.Hero
     
     private HeroData _heroData;
     private AreaManager _areaManager;
+
+    private bool _isAlive;
+
+    public bool IsAlive => _isAlive;
+
     public HeroData HeroData => _heroData;
     public AreaManager AreaManager => _areaManager;
     public HeroType Type => _type;
@@ -47,7 +54,8 @@ namespace DefaultNamespace.Hero
           _fixedUpdates.Add(fixedUpdate);
         }
       }
-      
+
+      _isAlive = true;
       IsInitialized = true;
     }
 
@@ -77,6 +85,12 @@ namespace DefaultNamespace.Hero
       }
     }
 
+    public void Death()
+    {
+      _isAlive = false;
+      OnDeath?.Invoke(this);
+    }
+
     public T GetAttachedComponent<T>() where T : ComponentBase
     {
       Type type = typeof(T);
@@ -99,7 +113,7 @@ namespace DefaultNamespace.Hero
       _componentsMap.Add(component);
       return this;
     }
-    
+
     protected T SetInject<T>(List<IInject> injects) where T: IInject
     {
       return (T)injects.Find(c => c.Type == typeof(T));

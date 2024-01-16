@@ -5,7 +5,6 @@ namespace DefaultNamespace.Component
 {
   public class Health : ComponentBase, IDamagable, IUpdateVisual
   {
-    public event Action OnDeath;
     public event Action<int> OnGetDamage;
     public event Action<float> OnUpdateVisual;
     
@@ -34,7 +33,7 @@ namespace DefaultNamespace.Component
         return;
       }
 
-      OnDeath?.Invoke();
+      ComponentOwner.Death();
     }
   }
 }

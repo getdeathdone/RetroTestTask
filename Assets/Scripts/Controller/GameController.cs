@@ -1,27 +1,40 @@
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace DefaultNamespace.Controller
 {
   public class GameController
   {
+    public event Action OnRestart;
+
+    private bool _isStop;
     private bool _isPaused;
 
-    public bool IsPaused => _isPaused;
+    public bool IsPaused => _isPaused || _isStop;
 
-    void TogglePause()
+    public void TogglePause()
     {
       _isPaused = !_isPaused;
+      Cursor.lockState = CursorLockMode.None;
     }
 
-    void RestartGame()
+    public void RestartGame()
     {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+      OnRestart?.Invoke();
+
+      StartGame();
     }
 
     public void StartGame()
     {
+      _isStop = false;
       Cursor.lockState = CursorLockMode.Locked;
+    }
+    
+    public void EndGame()
+    {
+      _isStop = true;
+      Cursor.lockState = CursorLockMode.None;
     }
   }
 }

@@ -20,37 +20,37 @@ namespace DefaultNamespace.ScriptableObjects
       Debug.LogError("HeroConfig not found for HeroType: " + heroType);
       return null;
     }
-    
-    public class HeroConfig
-    {
-      [Header("Common Parameters")]
-      [SerializeField]
-      private float _projectileSpeed;
-      [SerializeField]
-      private float _projectileLifetime;
-
-      [Header("Rebound Parameters")]
-      [SerializeField]
-      private float _reboundChance;
-      [SerializeField]
-      private float _additionalStrengthOnRebound;
-      [SerializeField]
-      private float _additionalHealthOnRebound;
-
-      [Header("Ultimate Ability Parameters")]
-      [SerializeField]
-      private float _ultimateAbilityRadius;
-
-      public float ProjectileSpeed => _projectileSpeed;
-      public float ProjectileLifetime => _projectileLifetime;
-      public float ReboundChance => _reboundChance;
-      public float AdditionalStrengthOnRebound => _additionalStrengthOnRebound;
-      public float AdditionalHealthOnRebound => _additionalHealthOnRebound;
-      public float UltimateAbilityRadius => _ultimateAbilityRadius;
-    }
-    
-    [Serializable]
-    public class HeroConfigDictionary : SerializableDictionaryBase<HeroType, HeroConfig>
-    {}
   }
+  
+  public class HeroConfig
+  {
+    [Header("Common Parameters")]
+    [SerializeField]
+    private float _projectileSpeed;
+    [SerializeField]
+    private float _projectileLifetime;
+
+    [Header("Rebound Parameters")]
+    [SerializeField]
+    private float _reboundChance;
+    [SerializeField]
+    private float _additionalStrengthOnRebound;
+    [SerializeField]
+    private float _additionalHealthOnRebound;
+
+    [Header("Ultimate Ability Parameters")]
+    [SerializeField]
+    private float _ultimateAbilityRadius;
+
+    public float ProjectileSpeed => _projectileSpeed;
+    public float ProjectileLifetime => _projectileLifetime;
+    public float ReboundChance => _reboundChance;
+    public float AdditionalStrengthOnRebound => _additionalStrengthOnRebound;
+    public float AdditionalHealthOnRebound => _additionalHealthOnRebound;
+    public float UltimateAbilityRadius => _ultimateAbilityRadius;
+  }
+    
+  [Serializable]
+  public class HeroConfigDictionary : SerializableDictionaryBase<HeroType, HeroConfig>
+  {}
 }

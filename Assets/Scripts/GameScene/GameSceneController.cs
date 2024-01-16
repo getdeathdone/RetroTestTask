@@ -28,7 +28,7 @@ namespace DefaultNamespace.GameScene
       _enemyController = enemyController;
     }
 
-    private void Awake()
+    private void Start()
     {
       _uiManager.Initialize();
       _cameraManager.Initialize();

@@ -52,6 +52,7 @@ namespace DefaultNamespace.Controller
 
       _currentSpawnInterval = INITIAL_SPAWN_INTERVAL;
       _coroutineHandler.StartRoutine(SpawnEnemyRoutine());
+      
       IsInitialized = true;
     }
 
