@@ -1,5 +1,5 @@
 using System;
-using DefaultNamespace.Hero;
+using DefaultNamespace.Component;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
 using Zenject;
@@ -9,21 +9,21 @@ namespace DefaultNamespace.Controller
   public class BattleController : object, IInitialize, IDeinitialize, IUpdateVisual
   {
     public const int PLAYER_KILL_TO_WIN = 20;
-
     public event Action<bool> OnFinishBattle;
     public event Action<float> OnUpdateVisual;
 
     private readonly EnemyController _enemyController;
-    private readonly BattleStatsPanel _battleStatsPanel;
     private readonly PlayerController _playerController;
+    private readonly GameController _gameController;
 
     private int _playerKillCounter;
-    
+
     [Inject]
-    public BattleController(EnemyController enemyController, PlayerController playerController)
+    public BattleController(EnemyController enemyController, PlayerController playerController, GameController gameController)
     {
       _playerController = playerController;
       _enemyController = enemyController;
+      _gameController = gameController;
     }
 
     public void Initialize()
@@ -34,7 +34,6 @@ namespace DefaultNamespace.Controller
       {
         VARIABLE.OnDeath += OnDied;
       }
-      
       
       IsInitialized = true;
     }
@@ -56,17 +55,24 @@ namespace DefaultNamespace.Controller
       IsInitialized = false;
     }
 
-    private void OnDied (HeroBase character)
+    private void OnDied (DamageInfo damageInfo)
     {
-      if (character.Side == HeroSide.None)
+      var hero = ((Health)damageInfo.Receiver).ComponentOwner;
+      
+      if (hero.Side == HeroSide.None)
       {
         Debug.LogWarning("HeroSide.None");
         return;
       }
       
-      if (character.Side == HeroSide.Player)
+      if (hero.Side == HeroSide.Player)
       {
         FinishBattle(false);
+        return;
+      }
+
+      if (damageInfo.AttackType == AttackType.Ultimate)
+      {
         return;
       }
 
@@ -85,6 +91,8 @@ namespace DefaultNamespace.Controller
       Deinitialize();
 
       OnFinishBattle?.Invoke(win);
+      
+      _gameController.EndGame();
     }
 
     public bool IsInitialized

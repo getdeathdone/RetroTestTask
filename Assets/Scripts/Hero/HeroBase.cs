@@ -10,7 +10,7 @@ namespace DefaultNamespace.Hero
 {
   public abstract class HeroBase : MonoBehaviour, IInitialize
   {
-    public event Action<HeroBase> OnDeath;
+    public event Action<DamageInfo> OnDeath;
     
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
     private readonly List<IUpdate> _updates = new List<IUpdate>();
@@ -85,10 +85,10 @@ namespace DefaultNamespace.Hero
       }
     }
 
-    public void Death()
+    public void Death(DamageInfo damageInfo)
     {
       _isAlive = false;
-      OnDeath?.Invoke(this);
+      OnDeath?.Invoke(damageInfo);
     }
 
     public T GetAttachedComponent<T>() where T : ComponentBase

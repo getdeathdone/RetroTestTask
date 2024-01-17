@@ -20,8 +20,10 @@ namespace DefaultNamespace.GameScene
     {
       Container.Bind<InputManager>().AsSingle().NonLazy();
       Container.Bind<GameController>().AsSingle().NonLazy();
-      Container.Bind<PlayerController>().AsSingle().NonLazy();
       Container.Bind<EnemyController>().AsSingle().NonLazy();
+      Container.Bind<PlayerController>().AsSingle().NonLazy();
+      Container.Bind<BattleController>().AsSingle().NonLazy();
+      Container.Bind<AchievementController>().AsSingle().NonLazy();
 
       Container.Bind<CameraManager>().FromInstance(_cameraManager).AsSingle().NonLazy();
       Container.Bind<AreaManager>().FromInstance(_areaManager).AsSingle().NonLazy();

@@ -15,4 +15,12 @@ namespace DefaultNamespace
     Player,
     Enemy
   }
+  
+  public enum AttackType
+  {
+    None,
+    Normal,
+    Ricochet,
+    Ultimate
+  }
 }

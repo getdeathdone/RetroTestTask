@@ -28,7 +28,7 @@ namespace DefaultNamespace
       _gameController = gameController;
     }
 
-    private void Awake()
+    protected virtual void Awake()
     {
       _openButton.onClick.AddListener(OpenCloseMenu);
       _closeButton.onClick.AddListener(OpenCloseMenu);
@@ -36,7 +36,7 @@ namespace DefaultNamespace
       _restartGameButton.onClick.AddListener(RestartGame);
     }
 
-    private void OnDestroy()
+    protected virtual  void OnDestroy()
     {
       _openButton.onClick.RemoveListener(OpenCloseMenu);
       _closeButton.onClick.RemoveListener(OpenCloseMenu);
