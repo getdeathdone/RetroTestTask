@@ -38,14 +38,14 @@ namespace DefaultNamespace.GameScene
     private void Start()
     {
       _uiManager.Initialize();
-      _cameraManager.Initialize();
 
       _playerController.Initialize();
-      _enemyController.Initialize();
-      
+      //_enemyController.Initialize();
+
+      _cameraManager.Initialize();
       _battleController.Initialize();
       _achievementController.Initialize();
-      
+
       _gameController.StartGame();
     }
 

@@ -1,6 +1,5 @@
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DefaultNamespace.Component
@@ -19,8 +18,8 @@ namespace DefaultNamespace.Component
     {
       _speed = ComponentOwner.HeroData.Speed;
       _transform = ComponentOwner.transform;
-      _rigidbody = ComponentOwner.transform.AddComponent<Rigidbody>();
       _areaManager = ComponentOwner.AreaManager;
+      _rigidbody = ComponentOwner.transform.GetComponent<Rigidbody>();
 
       IsInitialized = true;
     }
