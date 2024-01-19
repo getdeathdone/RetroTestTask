@@ -8,7 +8,7 @@ namespace DefaultNamespace.GameScene
   public class GameSceneInstaller : MonoInstaller
   {
     [SerializeField]
-    private AreaManager _areaManager;
+    private AreaController _areaController;
     [SerializeField]
     private UIManager _uiManager;
     [SerializeField]
@@ -26,7 +26,7 @@ namespace DefaultNamespace.GameScene
       Container.Bind<AchievementController>().AsSingle().NonLazy();
 
       Container.Bind<CameraManager>().FromInstance(_cameraManager).AsSingle().NonLazy();
-      Container.Bind<AreaManager>().FromInstance(_areaManager).AsSingle().NonLazy();
+      Container.Bind<AreaController>().FromInstance(_areaController).AsSingle().NonLazy();
       Container.Bind<UIManager>().FromInstance(_uiManager).AsSingle().NonLazy();
       Container.Bind<SpawnManager>().FromInstance(_spawnManager).AsSingle().NonLazy();
     }

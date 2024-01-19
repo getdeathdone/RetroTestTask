@@ -1110,7 +1110,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _smoothSpeed: 0.125
-  _cameraHeight: 0.125
 --- !u!1 &698978525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1669,7 +1668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4005a9060c014bdd87351451b849d971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _areaManager: {fileID: 1253889403}
+  _areaController: {fileID: 1253889403}
   _uiManager: {fileID: 1230829030}
   _spawnManager: {fileID: 1962533692}
   _cameraManager: {fileID: 534669906}

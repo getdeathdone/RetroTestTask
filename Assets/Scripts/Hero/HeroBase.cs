@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
 using DefaultNamespace.Interfaces;
-using DefaultNamespace.Manager;
 using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
@@ -19,24 +18,19 @@ namespace DefaultNamespace.Hero
     [SerializeField]
     private HeroType _type;
     
-    private HeroData _heroData;
-    private AreaManager _areaManager;
-
     private bool _isAlive;
     private bool _isActive;
-
+    private HeroData _heroData;
+    
     public bool IsAlive => _isAlive;
     public bool IsActive => _isActive;
-
     public HeroData HeroData => _heroData;
-    public AreaManager AreaManager => _areaManager;
     public HeroType Type => _type;
     public virtual HeroSide Side => HeroSide.None;
 
     public virtual void SetInject(List<IInject> injects)
     {
       _heroData = SetInject<HeroData>(injects);
-      _areaManager = SetInject<AreaManager>(injects);
     }
 
     public void Initialize()

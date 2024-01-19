@@ -15,6 +15,7 @@ namespace DefaultNamespace.Manager
     private Transform _playerTransform;
     private InputManager _inputManager;
     private PlayerController _playerController;
+    private GameController _gameController;
     private bool _isInitialized;
     private bool _isCameraToPlayer;
     private float _mCameraVerticalAngle;
@@ -23,10 +24,12 @@ namespace DefaultNamespace.Manager
     [Inject]
     private void Construct(
       InputManager inputManager,
-      PlayerController playerController)
+      PlayerController playerController,
+      GameController gameController)
     {
       _inputManager = inputManager;
       _playerController = playerController;
+      _gameController = gameController;
     }
     
     public void Initialize()
@@ -42,6 +45,11 @@ namespace DefaultNamespace.Manager
       {
         return;
       }
+
+      if (_gameController.IsPaused)
+      {
+        return;
+      }
       
       _mCameraVerticalAngle += _inputManager.GetLookInputsVertical() * InputManager.ROTATION_INPUT_SPEED;
       
@@ -53,6 +61,11 @@ namespace DefaultNamespace.Manager
     private void LateUpdate()
     {
       if (!IsInitialized || _isCameraToPlayer)
+      {
+        return;
+      }
+      
+      if (_gameController.IsPaused)
       {
         return;
       }

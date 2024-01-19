@@ -12,6 +12,7 @@ namespace DefaultNamespace.GameScene
     private GameController _gameController;
     private PlayerController _playerController;
     private EnemyController _enemyController;
+    private AreaController _areaController;
     private BattleController _battleController;
     private AchievementController _achievementController;
 
@@ -21,6 +22,7 @@ namespace DefaultNamespace.GameScene
       CameraManager cameraManager,
       GameController gameController,
       PlayerController playerController,
+      AreaController areaController,
       EnemyController enemyController,
       BattleController battleController,
       AchievementController achievementController)
@@ -32,6 +34,7 @@ namespace DefaultNamespace.GameScene
       _enemyController = enemyController;
       _battleController = battleController;
       _achievementController = achievementController;
+      _areaController = areaController;
     }
 
     private void Awake()
@@ -61,6 +64,7 @@ namespace DefaultNamespace.GameScene
       _playerController.Initialize();
       _enemyController.Initialize();
 
+      _areaController.Initialize();
       _cameraManager.Initialize();
       _battleController.Initialize();
       _achievementController.Initialize();

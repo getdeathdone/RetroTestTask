@@ -13,29 +13,27 @@ namespace DefaultNamespace.Manager
   public class SpawnManager : MonoBehaviour
   {
     [SerializeField]
+    private Transform _heroParent;
+    
+    [SerializeField]
     private HeroTypeDictionary _heroPrefabs = new HeroTypeDictionary();
     [SerializeField]
     private HeroDataDictionary _heroData = new HeroDataDictionary();
 
     private readonly List<HeroBase> _heroBases = new List<HeroBase>();
-
-    private AreaManager _areaManager;
+    
     private InputManager _inputManager;
-
-    private Vector3 GenerateRandomPositionInAreaRadius => GenerateRandomPositionInCircle(_areaManager.Radius);
 
     [Inject]
     private void Construct (
-      AreaManager areaManager, 
       InputManager inputManager)
     {
-      _areaManager = areaManager;
       _inputManager = inputManager;
     }
 
     public HeroPlayer SpawnPlayer()
     {
-      var player = SpawnHero(HeroType.Player, GenerateRandomPositionInAreaRadius);
+      var player = SpawnHero(HeroType.Player);
       player.name = $"{player.Type}";
 
       return (HeroPlayer)player;
@@ -48,10 +46,10 @@ namespace DefaultNamespace.Manager
         return null;
       }
       
-      return (HeroEnemy)SpawnHero(enemyType, GenerateRandomPositionInAreaRadius);
+      return (HeroEnemy)SpawnHero(enemyType);
     }
 
-    private HeroBase SpawnHero (HeroType heroType, Vector3 position)
+    private HeroBase SpawnHero (HeroType heroType)
     {
       if (heroType == HeroType.None)
       {
@@ -60,7 +58,7 @@ namespace DefaultNamespace.Manager
       }
       
       var heroBase = _heroPrefabs[heroType];
-      var hero = Instantiate(heroBase, position, heroBase.transform.rotation);
+      var hero = Instantiate(heroBase, _heroParent.transform);
 
       List<IInject> injects = AdditionInject(heroType);
       hero.SetInject(injects);
@@ -76,7 +74,6 @@ namespace DefaultNamespace.Manager
     {
       List<IInject> injects = new List<IInject>
       {
-        _areaManager,
         _heroData[heroType]
       };
 
@@ -121,17 +118,6 @@ namespace DefaultNamespace.Manager
 
       void BuildEnemy()
       {}
-    }
-
-    private Vector3 GenerateRandomPositionInCircle(float radius)
-    {
-      float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-      float distance = UnityEngine.Random.Range(0f, radius);
-      
-      float spawnX = distance * Mathf.Cos(angle);
-      float spawnZ = distance * Mathf.Sin(angle);
-
-      return new Vector3(spawnX, 0f, spawnZ);
     }
 
     [Serializable]
