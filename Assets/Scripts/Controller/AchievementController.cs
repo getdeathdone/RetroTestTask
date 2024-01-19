@@ -2,16 +2,12 @@ using DefaultNamespace.Component;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Controller
 {
   public class AchievementController: object, IInitialize, IDeinitialize
   {
-    private const float RicochetStrengthGainChance = 0.7f; // Шанс пополнения силы при убийстве рикошетным снарядом
-    private const float RicochetHealthGainChance = 0.3f;   // Шанс пополнения здоровья при убийстве рикошетным снарядом
-    private const int RicochetStrengthGain = 10;           // Количество силы, пополняемой при убийстве рикошетным снарядом
-    private const float RicochetHealthGainPercentage = 0.5f; // Процент здоровья, пополняемого при убийстве рикошетным снарядом
-
     private readonly EnemyController _enemyController;
     private readonly PlayerController _playerController;
 
@@ -24,12 +20,12 @@ namespace DefaultNamespace.Controller
 
     public void Initialize()
     {
-      _playerController.Player.OnDeath += OnDied;
-      
-      foreach (var VARIABLE in _enemyController.Enemies)
+      if (IsInitialized)
       {
-        VARIABLE.OnDeath += OnDied;
+        return;
       }
+      
+      Subscribe(true);
       
       IsInitialized = true;
     }
@@ -40,13 +36,8 @@ namespace DefaultNamespace.Controller
       {
         return;
       }
-      
-      _playerController.Player.OnDeath -= OnDied;
-      
-      foreach (var VARIABLE in _enemyController.Enemies)
-      {
-        VARIABLE.OnDeath -= OnDied;
-      }
+
+      Subscribe(false);
       
       IsInitialized = false;
     }
@@ -66,6 +57,9 @@ namespace DefaultNamespace.Controller
         Deinitialize();
         return;
       }
+      
+      var attack = damageInfo.DamageDealer.GetAttachedComponent<Attack>();
+      attack.AddStrength(GameConstants.Achievement.CalculateStrengthAchievement(hero.Type));
 
       if (damageInfo.AttackType == AttackType.Ricochet)
       {
@@ -76,16 +70,37 @@ namespace DefaultNamespace.Controller
       {
         float randomValue = Random.Range(0f, 1f);
 
-        if (randomValue <= RicochetStrengthGainChance)
+        if (randomValue <= GameConstants.Achievement.RicochetStrengthGainChance)
         {
           var attack = damageInfo.DamageDealer.GetAttachedComponent<Attack>();
-          attack.AddStrength(RicochetStrengthGain);
+          attack.AddStrength(GameConstants.Achievement.RicochetStrengthGain);
         } else
         {
           var health = damageInfo.DamageDealer.GetAttachedComponent<Health>();
-          float healthToRestore = health.MaxHealth * RicochetHealthGainPercentage;
+          float healthToRestore = health.MaxHealth * GameConstants.Achievement.RicochetHealthGainPercentage;
 
           health.RestoreHealth((int)healthToRestore);
+        }
+      }
+    }
+
+    private void Subscribe (bool value)
+    {
+      if (value)
+      {
+        _playerController.Player.OnDeath += OnDied;
+        
+        foreach (var VARIABLE in _enemyController.Enemies)
+        {
+          VARIABLE.OnDeath += OnDied;
+        }
+      } else
+      {
+        _playerController.Player.OnDeath -= OnDied;
+        
+        foreach (var VARIABLE in _enemyController.Enemies)
+        {
+          VARIABLE.OnDeath -= OnDied;
         }
       }
     }

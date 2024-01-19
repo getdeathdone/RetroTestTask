@@ -22,6 +22,7 @@ namespace DefaultNamespace.ScriptableObjects
     }
   }
   
+  [Serializable]
   public class HeroConfig
   {
     [Header("Common Parameters")]

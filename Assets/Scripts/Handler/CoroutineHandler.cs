@@ -17,5 +17,13 @@ namespace DefaultNamespace.Handler
         StopCoroutine(routine);
       }
     }
+    
+    public void StopRoutine (Coroutine routine)
+    {
+      if (routine != null)
+      {
+        StopCoroutine(routine);
+      }
+    }
   }
 }

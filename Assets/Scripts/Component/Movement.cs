@@ -4,29 +4,31 @@ using UnityEngine;
 
 namespace DefaultNamespace.Component
 {
-  public class Movement : ComponentBase, IUpdate, IFixedUpdate
+  public abstract class Movement : ComponentBase, IUpdate, IFixedUpdate
   {
     protected Transform _transform;
     
     private float _speed;
     private Rigidbody _rigidbody;
-    private AreaManager _areaManager;
+    protected AreaManager _areaManager;
 
     protected virtual Vector3 MovementDirection => Vector3.zero;
+    protected float Radius => _areaManager.Radius;
+    protected Vector3 CenterPoint => _areaManager.CenterPoint;
 
     public override void Initialize()
     {
+      _rigidbody = ComponentOwner.transform.GetComponent<Rigidbody>();
       _speed = ComponentOwner.HeroData.Speed;
       _transform = ComponentOwner.transform;
       _areaManager = ComponentOwner.AreaManager;
-      _rigidbody = ComponentOwner.transform.GetComponent<Rigidbody>();
 
       IsInitialized = true;
     }
 
     public virtual void Update()
     {
-      ClampMovementToBounds();
+      CheckNearEdge();
     }
 
     public void FixedUpdate()
@@ -39,24 +41,17 @@ namespace DefaultNamespace.Component
       _rigidbody.AddForce(MovementDirection * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
     }
 
-    private void ClampMovementToBounds()
+    private void CheckNearEdge()
     {
-      float radius = _areaManager.Radius;
-      Vector3 centerPoint = _areaManager.CenterPoint;
-      
-      float distanceToCenter = Vector3.Distance(_transform.position, centerPoint);
+      float distanceToCenter = Vector3.Distance(_transform.position, CenterPoint);
 
-      if (distanceToCenter > radius)
+      if (distanceToCenter > Radius)
       {
-        Vector3 normalizedDirection = (_transform.position - centerPoint).normalized;
-        
-        Vector3 newPosition = centerPoint + normalizedDirection * radius;
-        
-        newPosition.x = Mathf.Clamp(newPosition.x, centerPoint.x - radius, centerPoint.x + radius);
-        newPosition.z = Mathf.Clamp(newPosition.z, centerPoint.z - radius, centerPoint.z + radius);
-        
-        _transform.position = newPosition;
+        OutOfBounds();
       }
     }
+
+    protected virtual void OutOfBounds()
+    {}
   }
 }

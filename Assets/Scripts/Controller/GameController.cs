@@ -6,8 +6,9 @@ namespace DefaultNamespace.Controller
   public class GameController
   {
     public event Action OnRestart;
+    public event Action<bool> OnPause;
 
-    private bool _isStop;
+    private bool _isStop = true;
     private bool _isPaused;
 
     public bool IsPaused => _isPaused || _isStop;
@@ -15,7 +16,8 @@ namespace DefaultNamespace.Controller
     public void TogglePause()
     {
       _isPaused = !_isPaused;
-      Cursor.lockState = CursorLockMode.None;
+      OnPause?.Invoke(IsPaused);
+      Cursor.lockState = _isPaused ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
     public void RestartGame()

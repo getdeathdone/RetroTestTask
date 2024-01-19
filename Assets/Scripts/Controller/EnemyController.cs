@@ -11,18 +11,8 @@ using Zenject;
 
 namespace DefaultNamespace.Controller
 {
-  public class EnemyController : object, IInitialize
+  public class EnemyController : object, IInitialize, IDeinitialize
   {
-    private const int BLUE_ENEMY_RATIO = 1;
-    private const int RED_ENEMY_RATIO = 4;
-    
-    private const int MAX_ENEMY_COUNT = 30;
-    private const int START_ENEMY_COUNT = 5;
-    
-    private const float INITIAL_SPAWN_INTERVAL = 30f;
-    private const float MIN_SPAWN_INTERVAL = 6.0f;
-    private const float SPAWN_INTERVAL_DECREMENT = 2.0f;
-    
     public event Action<HeroEnemy> OnSpawnEnemy;
 
     private readonly List<HeroEnemy> _enemies = new List<HeroEnemy>();
@@ -30,30 +20,70 @@ namespace DefaultNamespace.Controller
 
     private readonly CoroutineHandler _coroutineHandler;
     private readonly SpawnManager _spawnManager;
+    private readonly GameController _gameController;
     private float _currentSpawnInterval;
+    private Coroutine _coroutine;
 
     [Inject]
     private EnemyController (
       SpawnManager spawnManager, 
-      CoroutineHandler coroutineHandler)
+      CoroutineHandler coroutineHandler,
+      GameController gameController)
     {
+      _gameController = gameController;
       _spawnManager = spawnManager;
       _coroutineHandler = coroutineHandler;
     }
 
     public void Initialize()
     {
-      GenerateEnemy(START_ENEMY_COUNT);
+      if (IsInitialized)
+      {
+        return;
+      }
+      
+      _gameController.OnPause += EnemyEnable;
+      GenerateEnemy(GameConstants.Enemy.START_ENEMY_COUNT);
 
       foreach (var VARIABLE in _enemies)
       {
         VARIABLE.Initialize();
       }
 
-      _currentSpawnInterval = INITIAL_SPAWN_INTERVAL;
-      _coroutineHandler.StartRoutine(SpawnEnemyRoutine());
+      _currentSpawnInterval = GameConstants.Enemy.INITIAL_SPAWN_INTERVAL;
+      _coroutine = _coroutineHandler.StartRoutine(SpawnEnemyRoutine());
       
       IsInitialized = true;
+    }
+    
+    public void Deinitialize()
+    {
+      if (!IsInitialized)
+      {
+        return;
+      }
+      
+      _gameController.OnPause -= EnemyEnable;
+      _coroutineHandler.StopRoutine(_coroutine);
+      
+      for (int index = _enemies.Count - 1; index >= 0; index--)
+      {
+        HeroEnemy VARIABLE = _enemies[index];
+        VARIABLE.DestroyEnemy();
+        Enemies.RemoveAt(index);
+      }
+      
+      Enemies.Clear();
+      
+      IsInitialized = false;
+    }
+
+    private void EnemyEnable(bool value)
+    {
+      foreach (var VARIABLE in Enemies)
+      {
+        VARIABLE.SetActive(value);
+      }
     }
 
     private void GenerateEnemy()
@@ -66,7 +96,7 @@ namespace DefaultNamespace.Controller
         int totalBlueEnemies = Enemies.Count(enemy => enemy.Type == HeroType.EnemyBlue);
         int totalRedEnemies = Enemies.Count(enemy => enemy.Type == HeroType.EnemyRed);
 
-        return totalBlueEnemies < totalRedEnemies * RED_ENEMY_RATIO ? HeroType.EnemyBlue : HeroType.EnemyRed;
+        return totalBlueEnemies < totalRedEnemies * GameConstants.Enemy.RED_ENEMY_RATIO ? HeroType.EnemyBlue : HeroType.EnemyRed;
       }
     }
 
@@ -74,7 +104,7 @@ namespace DefaultNamespace.Controller
     {
       for (int index = 0; index < count; index++)
       {
-        const int TOTAL_ENEMY_RATIO = BLUE_ENEMY_RATIO + RED_ENEMY_RATIO;
+        const int TOTAL_ENEMY_RATIO = GameConstants.Enemy.BLUE_ENEMY_RATIO + GameConstants.Enemy.RED_ENEMY_RATIO;
 
         HeroType enemyType = (index % TOTAL_ENEMY_RATIO == 0) ? HeroType.EnemyBlue : HeroType.EnemyRed;
 
@@ -84,7 +114,7 @@ namespace DefaultNamespace.Controller
 
     private void SpawnEnemy (HeroType enemyType)
     {
-      if (Enemies.Count == MAX_ENEMY_COUNT)
+      if (Enemies.Count == GameConstants.Enemy.MAX_ENEMY_COUNT)
       {
         Debug.Log("MAX_ENEMY_COUNT");
         return;
@@ -103,11 +133,16 @@ namespace DefaultNamespace.Controller
     {
       while (true)
       {
-        yield return new WaitForSeconds(_currentSpawnInterval);
+        while (!_gameController.IsPaused)
+        {
+          yield return new WaitForSeconds(_currentSpawnInterval);
         
-        _currentSpawnInterval = Mathf.Max(MIN_SPAWN_INTERVAL, _currentSpawnInterval - SPAWN_INTERVAL_DECREMENT);
+          _currentSpawnInterval = Mathf.Max(GameConstants.Enemy.MIN_SPAWN_INTERVAL, _currentSpawnInterval - GameConstants.Enemy.SPAWN_INTERVAL_DECREMENT);
         
-        GenerateEnemy();
+          GenerateEnemy();
+        }
+
+        yield return null;
       }
     }
 

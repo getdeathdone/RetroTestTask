@@ -9,15 +9,17 @@ namespace DefaultNamespace.ScriptableObjects
   {
     [SerializeField]
     private float _speed;
-    
     [SerializeField] 
     private int _health;
     [SerializeField]
-    private int _strength;      
+    private int _strengthInit;   
+    [SerializeField]
+    private int _strengthMax;      
 
     public float Speed => _speed;
     public int Health => _health;
-    public int Strength => _strength;
+    public int StrengthInit => _strengthInit;
+    public int StrengthMax => _strengthMax;
 
     public Type Type => GetType();
   }

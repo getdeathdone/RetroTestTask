@@ -116,7 +116,7 @@ namespace DefaultNamespace.Manager
 
       void BuildPlayer()
       {
-        heroBase.AddComponent<InputMovement>();
+        heroBase.AddComponent<PlayerMovement>();
       }
 
       void BuildEnemy()

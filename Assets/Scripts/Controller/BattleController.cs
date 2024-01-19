@@ -8,7 +8,6 @@ namespace DefaultNamespace.Controller
 {
   public class BattleController : object, IInitialize, IDeinitialize, IUpdateVisual
   {
-    public const int PLAYER_KILL_TO_WIN = 20;
     public event Action<bool> OnFinishBattle;
     public event Action<float> OnUpdateVisual;
 
@@ -28,12 +27,14 @@ namespace DefaultNamespace.Controller
 
     public void Initialize()
     {
-      _playerController.Player.OnDeath += OnDied;
-      
-      foreach (var VARIABLE in _enemyController.Enemies)
+      if (IsInitialized)
       {
-        VARIABLE.OnDeath += OnDied;
+        return;
       }
+
+      Subscribe(true);
+
+      _playerKillCounter = 0;
       
       IsInitialized = true;
     }
@@ -45,12 +46,7 @@ namespace DefaultNamespace.Controller
         return;
       }
       
-      _playerController.Player.OnDeath -= OnDied;
-      
-      foreach (var VARIABLE in _enemyController.Enemies)
-      {
-        VARIABLE.OnDeath -= OnDied;
-      }
+      Subscribe(false);
       
       IsInitialized = false;
     }
@@ -79,13 +75,12 @@ namespace DefaultNamespace.Controller
       _playerKillCounter++;
       OnUpdateVisual?.Invoke(_playerKillCounter);
 
-      if (_playerKillCounter >= PLAYER_KILL_TO_WIN)
+      if (_playerKillCounter >= GameConstants.Battle.PLAYER_KILL_TO_WIN)
       {
         FinishBattle(true);
       }
     }
     
-
     private void FinishBattle (bool win)
     {
       Deinitialize();
@@ -93,6 +88,27 @@ namespace DefaultNamespace.Controller
       OnFinishBattle?.Invoke(win);
       
       _gameController.EndGame();
+    }
+    
+    private void Subscribe (bool value)
+    {
+      if (value)
+      {
+        _playerController.Player.OnDeath += OnDied;
+        
+        foreach (var VARIABLE in _enemyController.Enemies)
+        {
+          VARIABLE.OnDeath += OnDied;
+        }
+      } else
+      {
+        _playerController.Player.OnDeath -= OnDied;
+        
+        foreach (var VARIABLE in _enemyController.Enemies)
+        {
+          VARIABLE.OnDeath -= OnDied;
+        }
+      }
     }
 
     public bool IsInitialized

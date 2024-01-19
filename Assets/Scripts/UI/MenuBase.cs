@@ -52,8 +52,8 @@ namespace DefaultNamespace
 
     private void RestartGame()
     {
-      OpenCloseMenu();
       _gameController.RestartGame();
+      OpenCloseMenu();
     }
 
     private void ExitGame()

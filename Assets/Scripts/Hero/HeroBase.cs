@@ -13,8 +13,8 @@ namespace DefaultNamespace.Hero
     public event Action<DamageInfo> OnDeath;
     
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
-    private readonly List<IUpdate> _updates = new List<IUpdate>();
-    private readonly List<IFixedUpdate> _fixedUpdates = new List<IFixedUpdate>();
+    private readonly Dictionary<Type, IUpdate> _updates = new Dictionary<Type, IUpdate>();
+    private readonly Dictionary<Type, IFixedUpdate> _fixedUpdates = new Dictionary<Type, IFixedUpdate>();
 
     [SerializeField]
     private HeroType _type;
@@ -23,8 +23,10 @@ namespace DefaultNamespace.Hero
     private AreaManager _areaManager;
 
     private bool _isAlive;
+    private bool _isActive;
 
     public bool IsAlive => _isAlive;
+    public bool IsActive => _isActive;
 
     public HeroData HeroData => _heroData;
     public AreaManager AreaManager => _areaManager;
@@ -39,19 +41,19 @@ namespace DefaultNamespace.Hero
 
     public void Initialize()
     {
-      foreach (var VARIABLE in _componentsMap)
+      foreach (var component in _componentsMap)
       {
-        VARIABLE.InitializeComponent(this);
-        VARIABLE.Initialize();
+        component.InitializeComponent(this);
+        component.Initialize();
 
-        if (VARIABLE is IUpdate update)
+        if (component is IUpdate update)
         {
-          _updates.Add(update);
+          _updates.TryAdd(update.GetType(), update);
         }
-        
-        if (VARIABLE is IFixedUpdate fixedUpdate)
+
+        if (component is IFixedUpdate fixedUpdate)
         {
-          _fixedUpdates.Add(fixedUpdate);
+          _fixedUpdates.Add(fixedUpdate.GetType(), fixedUpdate);
         }
       }
 
@@ -61,27 +63,27 @@ namespace DefaultNamespace.Hero
 
     private void Update()
     {
-      if (!IsInitialized)
+      if (!IsInitialized || !IsActive)
       {
         return;
       }
       
       foreach (var VARIABLE in _updates)
       {
-        VARIABLE.Update();
+        VARIABLE.Value.Update();
       }
     }
 
     private void FixedUpdate()
     {
-      if (!IsInitialized)
+      if (!IsInitialized || !IsActive)
       {
         return;
       }
 
       foreach (var VARIABLE in _fixedUpdates)
       {
-        VARIABLE.FixedUpdate();
+        VARIABLE.Value.FixedUpdate();
       }
     }
 
@@ -89,6 +91,13 @@ namespace DefaultNamespace.Hero
     {
       _isAlive = false;
       OnDeath?.Invoke(damageInfo);
+    }
+    
+    public HeroBase SetActive (bool status)
+    {
+      _isActive = status;
+
+      return this;
     }
 
     public T GetAttachedComponent<T>() where T : ComponentBase

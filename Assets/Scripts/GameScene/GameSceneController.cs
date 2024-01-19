@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace.Controller;
 using DefaultNamespace.Manager;
 using UnityEngine;
@@ -35,12 +34,32 @@ namespace DefaultNamespace.GameScene
       _achievementController = achievementController;
     }
 
+    private void Awake()
+    {
+      _gameController.OnRestart += Restart;
+      InitializeScene();
+    }
+
     private void Start()
     {
-      _uiManager.Initialize();
+      InitializeGame();
+    }
 
+    private void OnDestroy()
+    {
+      _gameController.OnRestart -= Restart;
+      Deinitialize();
+    }
+
+    private void InitializeScene()
+    {
+      _uiManager.Initialize();
+    }
+    
+    private void InitializeGame()
+    {
       _playerController.Initialize();
-      //_enemyController.Initialize();
+      _enemyController.Initialize();
 
       _cameraManager.Initialize();
       _battleController.Initialize();
@@ -49,10 +68,19 @@ namespace DefaultNamespace.GameScene
       _gameController.StartGame();
     }
 
-    private void OnDestroy()
+    private void Deinitialize()
     {
       _battleController.Deinitialize();
       _achievementController.Deinitialize();
+      
+      _playerController.Deinitialize();
+      _enemyController.Deinitialize();
+    }
+
+    private void Restart()
+    {
+      Deinitialize();
+      InitializeGame();
     }
   }
 }
