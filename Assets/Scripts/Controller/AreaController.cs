@@ -1,5 +1,4 @@
 using System;
-using DefaultNamespace.Controller;
 using DefaultNamespace.Interfaces;
 using UnityEditor;
 using UnityEngine;

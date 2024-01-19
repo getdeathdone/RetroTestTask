@@ -20,7 +20,7 @@ namespace DefaultNamespace.Component
     private Health _health;
     private bool IsLowHealth => _health.IsLowHealth();
     private float StrengthPercentage => (float)_strength / _strengthMax;
-    private bool _isAvailableUltimate => _strength >= _strengthMax;
+    private bool IsAvailableUltimate => _strength >= _strengthMax;
 
     public override void Initialize()
     {
@@ -37,7 +37,7 @@ namespace DefaultNamespace.Component
 
     public void GetAttackUltimate()
     {
-      if (!_isAvailableUltimate)
+      if (!IsAvailableUltimate)
       {
         return;
       }
