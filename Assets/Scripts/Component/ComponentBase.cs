@@ -16,8 +16,7 @@ namespace DefaultNamespace.Component
       ComponentOwner = heroBase;
     }
 
-    public virtual void Initialize ()
-    {}
+    public abstract void Initialize();
 
     public bool IsInitialized
     {

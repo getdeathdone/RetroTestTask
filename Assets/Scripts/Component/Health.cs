@@ -8,7 +8,6 @@ namespace DefaultNamespace.Component
   public class Health : ComponentBase, IDamagable, IUpdateVisual
   {
     private const int LOW_HEALTH_PERCENTAGE = 15;
-
     public event Action<DamageInfo> OnGetDamage;
     public event Action<float> OnUpdateVisual;
     

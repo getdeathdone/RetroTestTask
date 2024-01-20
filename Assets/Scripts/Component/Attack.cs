@@ -1,12 +1,14 @@
 using System;
+using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
+using DefaultNamespace.Manager;
 using DefaultNamespace.Projectile;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Component
 {
-  public class Attack : ComponentBase, IAttackable, IUpdateVisual
+  public class Attack : ComponentBase, IAttackable, IUpdateVisual, IUpdate
   {
     public event Action<float> OnUpdateVisual;
     
@@ -18,6 +20,7 @@ namespace DefaultNamespace.Component
     private int _strengthMax;
     private int _attackPrice;
     private Health _health;
+    private InputManager _inputManager;
     private bool IsLowHealth => _health.IsLowHealth();
     private float StrengthPercentage => (float)_strength / _strengthMax;
     private bool IsAvailableUltimate => _strength >= _strengthMax;
@@ -25,6 +28,7 @@ namespace DefaultNamespace.Component
     public override void Initialize()
     {
       _health = ComponentOwner.GetAttachedComponent<Health>();
+      _inputManager = (ComponentOwner as HeroPlayer)?.InputManager;
       _strength = ComponentOwner.HeroData.StrengthInit;
       _strengthMax = ComponentOwner.HeroData.StrengthMax;
       
@@ -33,6 +37,14 @@ namespace DefaultNamespace.Component
       OnUpdateVisual?.Invoke(StrengthPercentage);
       
       IsInitialized = true;
+    }
+
+    public void Update()
+    {
+      if (_inputManager != null)
+      {
+        
+      }
     }
 
     public void GetAttackUltimate()

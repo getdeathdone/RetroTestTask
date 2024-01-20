@@ -8,8 +8,8 @@ namespace DefaultNamespace.Manager
 {
   public class InputManager : object, IInject
   {
-    public const int ROTATION_INPUT_SPEED = 200;
-    public const float KEYBOARD_SLOWDOWN = 0.2f;
+    private const int ROTATION_INPUT_SPEED = 200;
+    private const int ROTATION_INPUT_MOBILE_SPEED = 20;
     
     private const bool INVERT_Y_AXIS = true;
     private const bool INVERT_X_AXIS = false;
@@ -21,6 +21,16 @@ namespace DefaultNamespace.Manager
     
     private readonly UIManager _uiManager;
     private readonly GameController _gameController;
+    
+    public Vector3 Direction => GetDirection();
+    public float RotateVertical => GetRotateVertical();
+    public float RotateHorizontal => GetRotateHorizontal();
+    private VariableJoystick VariableJoystick => _uiManager.InputPanel.VariableJoystick;
+    public Type Type => GetType();
+
+    private bool _useRotateKeyboard;
+    private float _smoothedTouchInputY;
+    private float _smoothedTouchInputX;
 
     [Inject]
     public InputManager (UIManager uiManager, GameController gameController)
@@ -29,31 +39,52 @@ namespace DefaultNamespace.Manager
       _gameController = gameController;
     }
 
-    private VariableJoystick VariableJoystick => _uiManager.InputPanel.VariableJoystick;
-    private Vector3 DirectionJoystick => Vector3.forward * VariableJoystick.Vertical + Vector3.right * VariableJoystick.Horizontal;
-    private Vector3 DirectionKeyboard => Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
-    public Vector3 Direction => PlatformManager.IS_MOBILE ? DirectionJoystick : DirectionKeyboard;
-
-    public float RotateHorizontalInput => UseRotateKeyboard ? GetRotationKeyboard() : GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_HORIZONTAL, INVERT_X_AXIS);
-    public bool UseRotateKeyboard => GetRotationKeyboard() != 0;
-    public Type Type => GetType();
-
-    private bool _useRotateKeyboard;
-    private float _smoothedTouchInput;
-
-    private int GetRotationKeyboard()
+    private Vector3 GetDirection()
     {
-      bool rotateLeftHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateLeftButton.IsButtonHeld : Input.GetKey(KeyCode.Q);
-      bool rotateRightHeld = PlatformManager.IS_MOBILE ? _uiManager.InputPanel.RotateRightButton.IsButtonHeld : Input.GetKey(KeyCode.E);
+      Vector3 direction;
 
-      return rotateLeftHeld && !rotateRightHeld ? -1 : !rotateLeftHeld && rotateRightHeld ? 1 : 0;
+      if (PlatformManager.IS_MOBILE)
+      {
+        direction = Vector3.forward * VariableJoystick.Vertical + Vector3.right * VariableJoystick.Horizontal;
+      } else
+      {
+        direction = Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
+      }
+
+      return direction;
     }
 
-    public float GetLookInputsVertical()
+    private float GetRotateHorizontal()
     {
       if(!PlatformManager.IS_MOBILE)
       {
-        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_VERTICAL, INVERT_Y_AXIS);
+        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_HORIZONTAL, INVERT_X_AXIS) * ROTATION_INPUT_SPEED;
+      } else
+      {
+        if (Input.touchCount <= 0)
+        {
+          return 0f;
+        }
+
+        Touch touch = Input.GetTouch(0);
+        
+        if (touch.position.x > Screen.width / 2 && touch.phase == TouchPhase.Moved)
+        {
+          float touchInput = touch.deltaPosition.x * Time.deltaTime;
+          _smoothedTouchInputX = Mathf.Lerp(_smoothedTouchInputX, touchInput, SMOOTHING_FACTOR);
+          int invert = INVERT_X_AXIS ? -1 : 1;
+          return invert * (_smoothedTouchInputX * ROTATION_INPUT_MOBILE_SPEED);
+        }
+
+        return 0f;
+      }
+    }
+
+    private float GetRotateVertical()
+    {
+      if(!PlatformManager.IS_MOBILE)
+      {
+        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_VERTICAL, INVERT_Y_AXIS) * ROTATION_INPUT_SPEED;
       } else
       {
         if (Input.touchCount <= 0)
@@ -65,10 +96,10 @@ namespace DefaultNamespace.Manager
           
         if (touch.position.x > Screen.width / 2 && touch.phase == TouchPhase.Moved)
         {
-          float touchInput = touch.deltaPosition.x * Time.deltaTime;
-          _smoothedTouchInput = Mathf.Lerp(_smoothedTouchInput, touchInput, SMOOTHING_FACTOR);
-
-          return _smoothedTouchInput;
+          float touchInput = touch.deltaPosition.y * Time.deltaTime;
+          _smoothedTouchInputY = Mathf.Lerp(_smoothedTouchInputY, touchInput, SMOOTHING_FACTOR);
+          int invert = INVERT_Y_AXIS ? -1 : 1;
+          return invert * (_smoothedTouchInputY * ROTATION_INPUT_MOBILE_SPEED);
         }
 
         return 0f;
@@ -93,11 +124,11 @@ namespace DefaultNamespace.Manager
       i *= 0.01f;
 
       return i;
-    }
-
-    private bool CanProcessInput()
-    {
-      return Cursor.lockState == CursorLockMode.Locked && !_gameController.IsPaused;
+      
+      bool CanProcessInput()
+      {
+        return Cursor.lockState == CursorLockMode.Locked && !_gameController.IsPaused;
+      }
     }
   }
 }

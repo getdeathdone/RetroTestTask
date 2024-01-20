@@ -113,7 +113,7 @@ namespace DefaultNamespace.Manager
 
       void BuildPlayer()
       {
-        heroBase.AddComponent<PlayerMovement>();
+        heroBase.AddComponent<Movement>();
       }
 
       void BuildEnemy()

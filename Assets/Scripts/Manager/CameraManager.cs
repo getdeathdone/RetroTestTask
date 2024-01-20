@@ -48,7 +48,7 @@ namespace DefaultNamespace.Manager
         return;
       }
       
-      _mCameraVerticalAngle += _inputManager.GetLookInputsVertical() * InputManager.ROTATION_INPUT_SPEED;
+      _mCameraVerticalAngle += _inputManager.RotateVertical;
       
       _mCameraVerticalAngle = Mathf.Clamp(_mCameraVerticalAngle, -89f, 89f);
       
