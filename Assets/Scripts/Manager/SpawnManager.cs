@@ -96,6 +96,10 @@ namespace DefaultNamespace.Manager
 
     private void AdditionComponent (HeroType heroType, HeroBase heroBase)
     {
+      heroBase.AddComponent<Attack>();
+      heroBase.AddComponent<Health>();
+      heroBase.AddComponent<Movement>();
+      
       switch (heroType)
       {
         case HeroType.Player:
@@ -113,13 +117,13 @@ namespace DefaultNamespace.Manager
 
       void BuildPlayer()
       {
-        heroBase.AddComponent<Attack>();
-        heroBase.AddComponent<Health>();
-        heroBase.AddComponent<Movement>();
+        
       }
 
       void BuildEnemy()
-      {}
+      {
+        
+      }
     }
 
     [Serializable]

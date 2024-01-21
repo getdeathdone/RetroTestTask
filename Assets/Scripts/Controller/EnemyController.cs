@@ -64,12 +64,21 @@ namespace DefaultNamespace.Controller
       }
       
       _gameController.OnPause -= EnemyEnable;
-      _coroutineHandler.StopRoutine(_coroutine);
-      
+
+      if (_coroutineHandler != null)
+      {
+        _coroutineHandler.StopRoutine(_coroutine);
+      }
+
       for (int index = _enemies.Count - 1; index >= 0; index--)
       {
         HeroEnemy VARIABLE = _enemies[index];
-        VARIABLE.DestroyEnemy();
+
+        if (VARIABLE != null)
+        {
+          VARIABLE.DestroyEnemy();
+        }
+
         Enemies.RemoveAt(index);
       }
       

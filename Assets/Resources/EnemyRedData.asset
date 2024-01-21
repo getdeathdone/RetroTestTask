@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: EnemyRedData
   m_EditorClassIdentifier: 
   _speed: 10
-  _rotationSpeed: 200
   _health: 50
+  _strengthInit: 0
+  _strengthMax: 0
+  _bullet: {fileID: 4154159277429472304, guid: 999c2111c6bf840d08705f5d64e6d636, type: 3}

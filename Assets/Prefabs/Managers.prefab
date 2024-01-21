@@ -169,10 +169,12 @@ MonoBehaviour:
       elementIcon: {fileID: 0}
     reqReferences: {fileID: 0}
     isExpanded: 1
-    _keyValues: 01000000
-    _keys: 01000000
+    _keyValues: 010000000200000003000000
+    _keys: 010000000200000003000000
     _values:
     - {fileID: 5007670313457338202, guid: 964263ee4216443dba76311931707efe, type: 3}
+    - {fileID: 8042422370992020070, guid: 6baff45995e4b42de9f8f03cb1670193, type: 3}
+    - {fileID: 3437708748555453960, guid: 2e2de368966994d7d818f0e7cc0165a5, type: 3}
   _heroData:
     reorderableList:
       canAdd: 1
@@ -196,7 +198,9 @@ MonoBehaviour:
       elementIcon: {fileID: 0}
     reqReferences: {fileID: 0}
     isExpanded: 1
-    _keyValues: 01000000
-    _keys: 01000000
+    _keyValues: 010000000200000003000000
+    _keys: 010000000200000003000000
     _values:
     - {fileID: 11400000, guid: 9f570fc618f6243088bfe54431ddb0c8, type: 2}
+    - {fileID: 11400000, guid: 1a4af86b6e0e44927bcdc4be06969059, type: 2}
+    - {fileID: 11400000, guid: 0ad1a0d5a8a8143aabfa202eadfaaacd, type: 2}
