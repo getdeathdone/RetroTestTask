@@ -1,3 +1,4 @@
+using DefaultNamespace.Component;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
@@ -12,14 +13,17 @@ namespace DefaultNamespace.Controller
 
     private SpawnManager _spawnManager;
     private GameController _gameController;
+    private UIManager _uiManager;
     
     [Inject]
     private void Construct (
       SpawnManager spawnManager,
-      GameController gameController)
+      GameController gameController,
+      UIManager uiManager)
     {
       _spawnManager = spawnManager;
       _gameController = gameController;
+      _uiManager = uiManager;
     }
 
     public void Initialize()
@@ -36,6 +40,8 @@ namespace DefaultNamespace.Controller
         _player = _spawnManager.SpawnPlayer();
       }
 
+      _player.GetAttachedComponent<Health>().OnUpdateVisual += _uiManager.HUDPanel.SetHealth;
+      
       _player.Initialize();
       
       IsInitialized = true;
@@ -49,6 +55,8 @@ namespace DefaultNamespace.Controller
       }
       
       _gameController.OnPause -= PlayerEnable;
+      
+      _player.GetAttachedComponent<Health>().OnUpdateVisual -= _uiManager.HUDPanel.SetHealth;
       
       IsInitialized = false;
     }

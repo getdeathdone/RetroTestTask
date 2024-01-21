@@ -7,8 +7,11 @@ namespace DefaultNamespace.Manager
   {
     [SerializeField]
     private InputPanel _inputPanel;
+    [SerializeField]
+    private HUDPanel _hudPanel;
     public InputPanel InputPanel => _inputPanel;
-    
+    public HUDPanel HUDPanel => _hudPanel;
+
     public void Initialize()
     {
       InputPanel.gameObject.SetActive(PlatformManager.IS_MOBILE);
