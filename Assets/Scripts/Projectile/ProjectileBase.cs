@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
+using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace DefaultNamespace.Projectile
     [SerializeField]
     private CapsuleCollider _capsuleCollider;
 
+    private bool _isShoot;
     private bool _isRicochet;
     private Vector3 _velocity;
     private Vector3 _lastPosition;
@@ -48,10 +50,16 @@ namespace DefaultNamespace.Projectile
       }
 
       OnShoot?.Invoke();
+      _isShoot = true;
     }
 
     void Update()
     {
+      if (!_isShoot)
+      {
+        return;
+      }
+      
       transform.position += _velocity * Time.deltaTime;
       transform.forward = _velocity.normalized;
 
@@ -61,14 +69,15 @@ namespace DefaultNamespace.Projectile
 
       Vector3 displacementSinceLastFrame = transform.position - _lastPosition;
 
-      RaycastHit [] hits = Physics.SphereCastAll(_lastPosition, Radius(), displacementSinceLastFrame.normalized, displacementSinceLastFrame.magnitude, _hittableLayers);
+      RaycastHit [] hits = Physics.SphereCastAll(_lastPosition, _capsuleCollider.radius, displacementSinceLastFrame.normalized, displacementSinceLastFrame.magnitude, _hittableLayers);
 
-      List<IDamagable> damagables = new List<IDamagable>();
+      List<IDamagable> damagablesValid = new List<IDamagable>();
 
       foreach (var hit in hits)
       {
-        if (IsHitValid(hit, out damagables) && hit.distance < closestHit.distance)
+        if (IsHitValid(hit, out List<IDamagable> damagables) && hit.distance < closestHit.distance)
         {
+          damagablesValid.AddRange(damagables);
           foundHit = true;
           closestHit = hit;
         }
@@ -82,10 +91,10 @@ namespace DefaultNamespace.Projectile
           closestHit.normal = -transform.forward;
         }
 
-        OnHit(damagables);
+        OnHit(damagablesValid);
       }
 
-      Debug.DrawLine(_lastPosition, transform.position, Color.blue);
+      Debug.DrawLine(_lastPosition, transform.position, Color.blue, 10f);
 
       _lastPosition = transform.position;
     }
@@ -99,20 +108,16 @@ namespace DefaultNamespace.Projectile
         return false;
       }
 
-      if (!hit.collider.gameObject.TryGetComponent(out IDamagable damagable))
+      if (hit.collider.gameObject.TryGetComponent(out HeroBase heroBase))
       {
-        return false;
+        damagables = heroBase.GetInterfaceImplementations<IDamagable>();
       }
-
-      if (damagable is ComponentBase component)
-      {
-        damagables = component.ComponentOwner.GetInterfaceImplementations<IDamagable>();
-      } else
+      else if (hit.collider.gameObject.TryGetComponent(out IDamagable damagable))
       {
         damagables.Add(damagable);
       }
-
-      return true;
+      
+      return damagables.Count > 0;
     }
 
     private void OnHit (List<IDamagable> damagables)
@@ -127,7 +132,7 @@ namespace DefaultNamespace.Projectile
         _isRicochet = false;
         var ownerTransform = ((ComponentBase)damagables[0]).ComponentOwner.transform;
 
-        RaycastHit [] ricochetHits = Physics.SphereCastAll(transform.position, Radius(), ownerTransform.position - transform.position, RICOCHET_DISTANCE, _hittableLayers);
+        RaycastHit [] ricochetHits = Physics.SphereCastAll(transform.position, _capsuleCollider.radius, ownerTransform.position - transform.position, RICOCHET_DISTANCE, _hittableLayers);
 
         bool foundNewEnemy = false;
 
@@ -177,12 +182,6 @@ namespace DefaultNamespace.Projectile
         }
         return false;
       }
-    }
-
-    private float Radius()
-    {
-      Vector3 capsuleColliderScale = _capsuleCollider.transform.localScale;
-      return Mathf.Max(_capsuleCollider.radius * capsuleColliderScale.x, _capsuleCollider.radius * capsuleColliderScale.y, _capsuleCollider.radius * capsuleColliderScale.z);
     }
   }
 }
