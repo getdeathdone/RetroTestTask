@@ -9,8 +9,9 @@ namespace DefaultNamespace.Projectile
   public class ProjectileBase : MonoBehaviour
   {
     private const float MAX_LIFE_TIME = 5f;
+    private const float RICOCHET_DISTANCE = 10f;
     public event Action OnShoot;
-    
+
     private readonly List<Collider> _ignoredColliders = new List<Collider>();
 
     [SerializeField]
@@ -20,10 +21,10 @@ namespace DefaultNamespace.Projectile
     [SerializeField]
     private CapsuleCollider _capsuleCollider;
 
-    private AttackInfo _attackInfo;
-    private float _shootTime;
+    private bool _isRicochet;
     private Vector3 _velocity;
     private Vector3 _lastPosition;
+    private AttackInfo _attackInfo;
 
     private void Awake()
     {
@@ -34,9 +35,9 @@ namespace DefaultNamespace.Projectile
     {
       _attackInfo = attackInfo;
       
-      _shootTime = Time.time;
       _lastPosition = transform.position;
       _velocity = transform.forward * _speed;
+      _isRicochet = attackInfo.AttackType == AttackType.Ricochet;
 
       var heroBase = (_attackInfo.DamageDealer as ComponentBase)?.ComponentOwner;
 
@@ -53,7 +54,7 @@ namespace DefaultNamespace.Projectile
     {
       transform.position += _velocity * Time.deltaTime;
       transform.forward = _velocity.normalized;
-      
+
       RaycastHit closestHit = new RaycastHit();
       closestHit.distance = Mathf.Infinity;
       bool foundHit = false;
@@ -83,16 +84,16 @@ namespace DefaultNamespace.Projectile
 
         OnHit(damagables);
       }
-      
+
       Debug.DrawLine(_lastPosition, transform.position, Color.blue);
 
       _lastPosition = transform.position;
     }
-    
+
     private bool IsHitValid (RaycastHit hit, out List<IDamagable> damagables)
     {
       damagables = new List<IDamagable>();
-      
+
       if (_ignoredColliders.Contains(hit.collider))
       {
         return false;
@@ -121,7 +122,61 @@ namespace DefaultNamespace.Projectile
         damagable.GetDamage(_attackInfo);
       }
 
-      Destroy(gameObject);
+      if (_isRicochet && damagables.Count > 0)
+      {
+        _isRicochet = false;
+        var ownerTransform = ((ComponentBase)damagables[0]).ComponentOwner.transform;
+
+        RaycastHit [] ricochetHits = Physics.SphereCastAll(transform.position, Radius(), ownerTransform.position - transform.position, RICOCHET_DISTANCE, _hittableLayers);
+
+        bool foundNewEnemy = false;
+
+        foreach (var hit in ricochetHits)
+        {
+          if (!IsHitValid(hit, out List<IDamagable> newDamagables))
+          {
+            continue;
+          }
+
+          if (ContainsAny(damagables, newDamagables))
+          {
+            continue;
+          }
+
+          foundNewEnemy = true;
+          break;
+        }
+
+        if (foundNewEnemy)
+        {
+          Vector3 reflectionDirection = Vector3.Reflect(_velocity.normalized, ownerTransform.position - transform.position);
+          
+          _velocity = reflectionDirection * _speed;
+          transform.position += _velocity * Time.deltaTime * 0.1f;
+          transform.forward = _velocity.normalized;
+        } else
+        {
+          Destroy(gameObject);
+        }
+      } else
+      {
+        Destroy(gameObject);
+      }
+      
+      bool ContainsAny(List<IDamagable> list1, List<IDamagable> list2)
+      {
+        foreach (var item1 in list1)
+        {
+          foreach (var item2 in list2)
+          {
+            if (item1.Equals(item2))
+            {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
     }
 
     private float Radius()
