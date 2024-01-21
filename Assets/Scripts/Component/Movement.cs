@@ -2,28 +2,27 @@ using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace DefaultNamespace.Component
 {
   public class Movement : ComponentBase, IUpdate, IFixedUpdate
   {
     private Transform _transform;
-    private Rigidbody _rigidbody;
+    private NavMeshAgent _navMeshAgent;
     private InputManager _inputManager;
-    
-    private float _speed;
 
     public override void Initialize()
     {
       _transform = ComponentOwner.transform;
-      _rigidbody = ComponentOwner.transform.GetComponent<Rigidbody>();
       _inputManager = (ComponentOwner as HeroPlayer)?.InputManager;
-      _speed = ComponentOwner.HeroData.Speed;
+      _navMeshAgent = ComponentOwner.transform.GetComponent<NavMeshAgent>();
+      _navMeshAgent.speed = (ComponentOwner as HeroPlayer)?.HeroData.Speed ?? 0f;
 
       IsInitialized = true;
     }
 
-    public virtual void Update()
+    public void Update()
     {
       RotateUpdate();
     }
@@ -36,13 +35,12 @@ namespace DefaultNamespace.Component
     private void RotateUpdate()
     {
       float angle = 0;
-      
+
       if (_inputManager != null)
       {
-        _transform.Rotate(Vector3.up, _inputManager.RotateHorizontal);
-
+        angle = _inputManager.RotateHorizontal;
       }
-      
+
       _transform.Rotate(Vector3.up, angle);
     }
 
@@ -55,7 +53,7 @@ namespace DefaultNamespace.Component
         movementDirection = _transform.TransformDirection(_inputManager.Direction);
       }
       
-      _rigidbody.AddForce(movementDirection * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+      _navMeshAgent.Move(movementDirection * _navMeshAgent.speed * Time.fixedDeltaTime);
     }
   }
 }
