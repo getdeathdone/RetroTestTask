@@ -23,7 +23,10 @@ namespace DefaultNamespace.Component
     private InputManager _inputManager;
     private bool IsLowHealth => _health.IsLowHealth();
     private float StrengthPercentage => (float)_strength / _strengthMax;
+    private bool IsInputManagerAvailable => _inputManager != null;
+    private bool IsAttack => IsInputManagerAvailable ? _inputManager.Attack : false;
     private bool IsAvailableUltimate => _strength >= _strengthMax;
+    private bool IsAttackUltimate => IsAvailableUltimate && (IsInputManagerAvailable && _inputManager.UltimateAttack || false);
 
     public override void Initialize()
     {
@@ -41,23 +44,16 @@ namespace DefaultNamespace.Component
 
     public void Update()
     {
-      if (_inputManager != null)
+      if (IsAttack)
       {
-        
+        GetAttack();
+      } else if (IsAttackUltimate)
+      {
+        GetAttack(AttackType.Ultimate);
       }
     }
 
-    public void GetAttackUltimate()
-    {
-      if (!IsAvailableUltimate)
-      {
-        return;
-      }
-      
-      GetAttack(AttackType.Ultimate);
-    }
-
-    public void GetAttack(AttackType attackType = AttackType.None)
+    public void GetAttack (AttackType attackType = AttackType.None)
     {
       if (attackType == AttackType.None)
       {

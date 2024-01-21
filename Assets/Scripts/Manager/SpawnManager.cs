@@ -113,6 +113,8 @@ namespace DefaultNamespace.Manager
 
       void BuildPlayer()
       {
+        heroBase.AddComponent<Attack>();
+        heroBase.AddComponent<Health>();
         heroBase.AddComponent<Movement>();
       }
 

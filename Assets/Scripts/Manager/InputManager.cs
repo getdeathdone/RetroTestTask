@@ -25,7 +25,10 @@ namespace DefaultNamespace.Manager
     public Vector3 Direction => GetDirection();
     public float RotateVertical => GetRotateVertical();
     public float RotateHorizontal => GetRotateHorizontal();
-    private VariableJoystick VariableJoystick => _uiManager.InputPanel.VariableJoystick;
+
+    public bool Attack => PlatformManager.IS_MOBILE ? _uiManager.InputPanel.AttackButton : Input.GetKeyDown(KeyCode.Space);
+    public bool UltimateAttack => PlatformManager.IS_MOBILE ? _uiManager.InputPanel.AttackUltimateButton : Input.GetKeyDown(KeyCode.LeftAlt);
+    
     public Type Type => GetType();
 
     private bool _useRotateKeyboard;
@@ -45,7 +48,9 @@ namespace DefaultNamespace.Manager
 
       if (PlatformManager.IS_MOBILE)
       {
-        direction = Vector3.forward * VariableJoystick.Vertical + Vector3.right * VariableJoystick.Horizontal;
+        VariableJoystick variableJoystick = _uiManager.InputPanel.VariableJoystick;
+
+        direction = Vector3.forward * variableJoystick.Vertical + Vector3.right * variableJoystick.Horizontal;
       } else
       {
         direction = Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
@@ -58,7 +63,7 @@ namespace DefaultNamespace.Manager
     {
       if(!PlatformManager.IS_MOBILE)
       {
-        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_HORIZONTAL, INVERT_X_AXIS) * ROTATION_INPUT_SPEED;
+        return GetMouseAxis(MOUSE_AXIS_NAME_HORIZONTAL, INVERT_X_AXIS) * ROTATION_INPUT_SPEED;
       } else
       {
         if (Input.touchCount <= 0)
@@ -84,7 +89,7 @@ namespace DefaultNamespace.Manager
     {
       if(!PlatformManager.IS_MOBILE)
       {
-        return GetMouseOrStickLookAxis(MOUSE_AXIS_NAME_VERTICAL, INVERT_Y_AXIS) * ROTATION_INPUT_SPEED;
+        return GetMouseAxis(MOUSE_AXIS_NAME_VERTICAL, INVERT_Y_AXIS) * ROTATION_INPUT_SPEED;
       } else
       {
         if (Input.touchCount <= 0)
@@ -106,7 +111,7 @@ namespace DefaultNamespace.Manager
       }
     }
 
-    private float GetMouseOrStickLookAxis (string mouseInputName, bool invertAxis)
+    private float GetMouseAxis (string mouseInputName, bool invertAxis)
     {
       if (!CanProcessInput())
       {
