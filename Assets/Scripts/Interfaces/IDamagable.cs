@@ -1,5 +1,4 @@
 using System;
-using DefaultNamespace.Hero;
 
 namespace DefaultNamespace.Interfaces
 {
@@ -7,27 +6,19 @@ namespace DefaultNamespace.Interfaces
   {
     public event Action<DamageInfo> OnGetDamage;
 
-    public void GetDamage(int damage, AttackType attackType, HeroBase damageDealer);
+    public void GetDamage(AttackInfo attackInfo);
   }
-
-  public class DamageInfo
+  
+  public class DamageInfo : AttackInfo
   {
-    private readonly int _damage;
-    private readonly AttackType _attackType;
-    private readonly HeroBase _damageDealer; // тот кто нанес
-    private readonly IDamagable _receiver;   // тот кто получил
+    private readonly IDamagable _receiver;      // тот кто получил
+    public IDamagable Receiver => _receiver;
 
-    public DamageInfo(int damage, AttackType attackType, HeroBase damageDealer, IDamagable receiver)
+    public DamageInfo(int damage, AttackType attackType, IAttackable damageDealer) : base(damage, attackType, damageDealer)
+    {}
+    public DamageInfo (AttackInfo attackInfo, IDamagable receiver) : base(attackInfo.Damage, attackInfo.AttackType, attackInfo.DamageDealer)
     {
-      _damage = damage;
-      _attackType = attackType;
-      _damageDealer = damageDealer;
       _receiver = receiver;
     }
-    
-    public int Damage => _damage;
-    public AttackType AttackType => _attackType;
-    public HeroBase DamageDealer => _damageDealer;
-    public IDamagable Receiver => _receiver;
   }
 }

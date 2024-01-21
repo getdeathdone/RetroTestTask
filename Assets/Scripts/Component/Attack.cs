@@ -4,6 +4,7 @@ using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
 using DefaultNamespace.Projectile;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Component
@@ -19,7 +20,9 @@ namespace DefaultNamespace.Component
     private int _strength;
     private int _strengthMax;
     private int _attackPrice;
+    private Camera _camera;
     private Health _health;
+    private ProjectileBase _bullet;
     private InputManager _inputManager;
     private bool IsLowHealth => _health.IsLowHealth();
     private float StrengthPercentage => (float)_strength / _strengthMax;
@@ -30,11 +33,14 @@ namespace DefaultNamespace.Component
 
     public override void Initialize()
     {
+      _camera = Camera.main;
+
+      _bullet = ComponentOwner.HeroData.Bullet;
       _health = ComponentOwner.GetAttachedComponent<Health>();
       _inputManager = (ComponentOwner as HeroPlayer)?.InputManager;
+      
       _strength = ComponentOwner.HeroData.StrengthInit;
       _strengthMax = ComponentOwner.HeroData.StrengthMax;
-      
       _attackPrice = (int)(_strengthMax * PERCENT_OF_ATTACK_PRICE);
       
       OnUpdateVisual?.Invoke(StrengthPercentage);
@@ -61,17 +67,21 @@ namespace DefaultNamespace.Component
       }
 
       int attackPrice = attackType == AttackType.Ultimate ? _strengthMax : _attackPrice;
-      
+
       if (attackPrice > _strength)
       {
         return;
       }
-      
+
       _strength -= attackPrice;
       OnUpdateVisual?.Invoke(StrengthPercentage);
 
-      ProjectileBase projectileBase = new ProjectileBase(attackPrice, attackType, ComponentOwner);
-      projectileBase.Shoot();
+      Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+      Vector3 worldCenter = _camera.ScreenToWorldPoint(screenCenter);
+      Vector3 forwardDirection = _camera.transform.forward;
+
+      ProjectileBase projectileBase = Object.Instantiate(_bullet, worldCenter, Quaternion.LookRotation(forwardDirection));
+      projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this));
     }
 
     public void AddStrength (int ricochetStrengthGain)

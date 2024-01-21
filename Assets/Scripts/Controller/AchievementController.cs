@@ -44,22 +44,26 @@ namespace DefaultNamespace.Controller
 
     private void OnDied (DamageInfo damageInfo)
     {
-      var hero = ((Health)damageInfo.Receiver).ComponentOwner;
+      var heroReceiver = ((Health)damageInfo.Receiver).ComponentOwner;
 
-      if (hero.Side == HeroSide.None)
+      if (heroReceiver.Side == HeroSide.None)
       {
         Debug.LogWarning("HeroSide.None");
         return;
       }
 
-      if (hero.Side == HeroSide.Player)
+      if (heroReceiver.Side == HeroSide.Player)
       {
         Deinitialize();
         return;
       }
-      
-      var attack = damageInfo.DamageDealer.GetAttachedComponent<Attack>();
-      attack.AddStrength(GameConstants.Achievement.CalculateStrengthAchievement(hero.Type));
+
+      if (damageInfo.DamageDealer is not Attack attack)
+      {
+        return;
+      }
+
+      attack.AddStrength(GameConstants.Achievement.CalculateStrengthAchievement(heroReceiver.Type));
 
       if (damageInfo.AttackType == AttackType.Ricochet)
       {
@@ -72,11 +76,10 @@ namespace DefaultNamespace.Controller
 
         if (randomValue <= GameConstants.Achievement.RicochetStrengthGainChance)
         {
-          var attack = damageInfo.DamageDealer.GetAttachedComponent<Attack>();
           attack.AddStrength(GameConstants.Achievement.RicochetStrengthGain);
         } else
         {
-          var health = damageInfo.DamageDealer.GetAttachedComponent<Health>();
+          var health = attack.ComponentOwner.GetAttachedComponent<Health>();
           float healthToRestore = health.MaxHealth * GameConstants.Achievement.RicochetHealthGainPercentage;
 
           health.RestoreHealth((int)healthToRestore);

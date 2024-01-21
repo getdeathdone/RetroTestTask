@@ -1,5 +1,4 @@
 using System;
-using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
 
@@ -27,16 +26,16 @@ namespace DefaultNamespace.Component
       IsInitialized = true;
     }
 
-    public void GetDamage (int damage, AttackType attackType, HeroBase damageDealer)
+    public void GetDamage (AttackInfo attackInfo)
     {
       if (!ComponentOwner.IsAlive)
       {
         return;
       }
       
-      _currentHealth -= damage;
+      _currentHealth -= attackInfo.Damage;
 
-      DamageInfo info = new DamageInfo(damage, attackType, damageDealer, this);
+      DamageInfo info = new DamageInfo(attackInfo, this);
       
       OnGetDamage?.Invoke(info);
       OnUpdateVisual?.Invoke(HealthPercentage);

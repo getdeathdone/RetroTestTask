@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace.Component;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.ScriptableObjects;
@@ -115,6 +116,16 @@ namespace DefaultNamespace.Hero
       T component = new T();
       _componentsMap.Add(component);
       return this;
+    }
+
+    public List<T> GetInterfaceImplementations<T>()
+    {
+      List<T> implementations = _componentsMap
+        .Where(componentBase => componentBase is T && typeof(T).IsInterface)
+        .Cast<T>()
+        .ToList();
+
+      return implementations.Count > 0 ? implementations : null;
     }
 
     protected T SetInject<T>(List<IInject> injects) where T: IInject
