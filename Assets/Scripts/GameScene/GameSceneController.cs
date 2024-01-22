@@ -8,7 +8,6 @@ namespace DefaultNamespace.GameScene
   public class GameSceneController : MonoBehaviour
   {
     private UIManager _uiManager;
-    private CameraManager _cameraManager;
     private GameController _gameController;
     private PlayerController _playerController;
     private EnemyController _enemyController;
@@ -19,7 +18,6 @@ namespace DefaultNamespace.GameScene
     [Inject]
     private void Construct(
       UIManager inputManager,
-      CameraManager cameraManager,
       GameController gameController,
       PlayerController playerController,
       AreaController areaController,
@@ -28,7 +26,6 @@ namespace DefaultNamespace.GameScene
       AchievementController achievementController)
     {
       _uiManager = inputManager;
-      _cameraManager = cameraManager;
       _gameController = gameController;
       _playerController = playerController;
       _enemyController = enemyController;
@@ -48,6 +45,7 @@ namespace DefaultNamespace.GameScene
     private void Start()
     {
       InitializeGame();
+      _uiManager.PausePanel.OpenCloseMenu();
     }
 
     private void OnDestroy()
@@ -63,13 +61,8 @@ namespace DefaultNamespace.GameScene
       _playerController.Initialize();
       _enemyController.Initialize();
 
-      _cameraManager.Initialize();
       _battleController.Initialize();
       _achievementController.Initialize();
-
-      _gameController.StartGame();
-      
-      _playerController.Player.SetActive(true);
     }
 
     private void Deinitialize()

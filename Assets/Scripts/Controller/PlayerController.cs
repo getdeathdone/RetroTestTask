@@ -67,7 +67,7 @@ namespace DefaultNamespace.Controller
     
     private void PlayerEnable(bool value)
     {
-      Player.SetActive(value);
+      Player.SetActive(!value);
     }
 
     public bool IsInitialized

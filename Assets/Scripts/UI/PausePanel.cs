@@ -1,20 +1,22 @@
 using DefaultNamespace.Controller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace DefaultNamespace
 {
-  public class BattleStatsPanel : MenuBase
+  public class PausePanel : MenuBase
   {
-    public const string VICTORY = "Victory";
-    public const string LOSS = "Loss";
-    
+    private const string VICTORY = "Victory";
+    private const string LOSS = "Loss";
+    private const string PAUSE = "Pause";
+
     [SerializeField]
-    private TextMeshProUGUI _playerKill;
+    private Button _startGame;
     [SerializeField]
     private TextMeshProUGUI _gameStatus;
-    
+
     private BattleController _battleController;
 
     [Inject]
@@ -27,28 +29,43 @@ namespace DefaultNamespace
     protected override void Awake()
     {
       base.Awake();
-      
+
+      _startGame.onClick.AddListener(StartGame);
       _battleController.OnFinishBattle += FinishBattle;
-      _battleController.OnUpdateVisual += UpdatePlayerKill;
     }
 
     protected override void OnDestroy()
     {
       base.OnDestroy();
 
+      _startGame.onClick.RemoveListener(StartGame);
       _battleController.OnFinishBattle -= FinishBattle;
-      _battleController.OnUpdateVisual -= UpdatePlayerKill;
     }
 
-    private void UpdatePlayerKill (float obj)
+    private void StartGame()
     {
-      _playerKill.text = ((int)obj).ToString();
+      _gameController.StartGame();
+      OpenCloseMenu();
+      
+      _startGame.gameObject.SetActive(false);
+      _restartGameButton.gameObject.SetActive(true);
+      _closeButton.gameObject.SetActive(true);
     }
 
     private void FinishBattle (bool obj)
     {
       _gameStatus.text = obj ? VICTORY : LOSS;
       OpenCloseMenu();
+    }
+
+    public override void OpenCloseMenu()
+    {
+      if (!_gameController.IsStop)
+      {
+        _gameStatus.text = PAUSE;
+      }
+      
+      base.OpenCloseMenu();
     }
   }
 }

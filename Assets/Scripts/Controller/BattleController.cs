@@ -3,15 +3,13 @@ using DefaultNamespace.Component;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
-using UnityEngine;
 using Zenject;
 
 namespace DefaultNamespace.Controller
 {
-  public class BattleController : object, IInitialize, IDeinitialize, IUpdateVisual
+  public class BattleController : object, IInitialize, IDeinitialize
   {
     public event Action<bool> OnFinishBattle;
-    public event Action<float> OnUpdateVisual;
 
     private readonly EnemyController _enemyController;
     private readonly PlayerController _playerController;
@@ -39,6 +37,7 @@ namespace DefaultNamespace.Controller
       InitSubscribe(true);
 
       _playerKillCounter = 0;
+      _uiManager.HUDPanel.UpdatePlayerKill(_playerKillCounter);
       
       IsInitialized = true;
     }
@@ -78,7 +77,7 @@ namespace DefaultNamespace.Controller
       }
 
       _playerKillCounter++;
-      OnUpdateVisual?.Invoke(_playerKillCounter);
+      _uiManager.HUDPanel.UpdatePlayerKill(_playerKillCounter);
 
       if (_playerKillCounter >= GameConstants.Battle.PLAYER_KILL_TO_WIN)
       {
@@ -89,10 +88,9 @@ namespace DefaultNamespace.Controller
     private void FinishBattle (bool win)
     {
       Deinitialize();
-
-      OnFinishBattle?.Invoke(win);
       
       _gameController.EndGame();
+      OnFinishBattle?.Invoke(win);
     }
 
     private void InitSubscribe (bool isSubscribe)

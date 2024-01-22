@@ -12,7 +12,8 @@ namespace DefaultNamespace.Component
     private NavMeshAgent _navMeshAgent;
     private InputManager _inputManager;
 
-    protected Transform Transform => _transform;
+    private Transform Transform => _transform;
+    private InputManager InputManager => _inputManager;
     protected NavMeshAgent NavMeshAgent => _navMeshAgent;
 
     public override void Initialize()
@@ -39,26 +40,26 @@ namespace DefaultNamespace.Component
     {
       float angle = 0;
 
-      if (_inputManager != null)
+      if (InputManager != null)
       {
-        angle = _inputManager.RotateHorizontal;
+        angle = InputManager.RotateHorizontal;
       }
 
-      _transform.Rotate(Vector3.up, angle);
+      Transform.Rotate(Vector3.up, angle);
     }
 
     private void MovementUpdate()
     {
       Vector3 movementDirection = default;
 
-      if (_inputManager != null)
+      if (InputManager != null)
       {
-        movementDirection = _transform.TransformDirection(_inputManager.Direction);
+        movementDirection = _transform.TransformDirection(InputManager.Direction);
       }
       
       if(movementDirection != default || movementDirection != Vector3.zero)
       {
-        _navMeshAgent.Move(movementDirection * _navMeshAgent.speed * Time.fixedDeltaTime);
+        NavMeshAgent.Move(movementDirection * NavMeshAgent.speed * Time.fixedDeltaTime);
       }
     }
   }

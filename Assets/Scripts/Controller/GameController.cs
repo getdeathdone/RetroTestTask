@@ -11,6 +11,7 @@ namespace DefaultNamespace.Controller
     private bool _isStop = true;
     private bool _isPaused;
 
+    public bool IsStop => _isStop;
     public bool IsPaused => _isPaused || _isStop;
 
     public void TogglePause()

@@ -1,11 +1,13 @@
+using System;
 using DefaultNamespace.Controller;
+using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
 using Zenject;
 
 namespace DefaultNamespace.Manager
 {
-  public class CameraManager : MonoBehaviour, IInitialize
+  public class CameraManager : MonoBehaviour
   {
     private readonly Vector3 _offset = new Vector3(0, 0.2f, 0);
 
@@ -29,16 +31,19 @@ namespace DefaultNamespace.Manager
       _playerController = playerController;
     }
     
-    public void Initialize()
+    public void Awake()
     {
-      _playerTransform = _playerController.Player.transform;
-      
-      _isInitialized = true;
+      _playerController.OnSpawnPlayer += SpawnPlayer;
+    }
+
+    private void OnDestroy()
+    {
+      _playerController.OnSpawnPlayer -= SpawnPlayer;
     }
 
     private void Update()
     {
-      if (!IsInitialized && !_isCameraToPlayer)
+      if (!_isCameraToPlayer)
       {
         return;
       }
@@ -57,7 +62,7 @@ namespace DefaultNamespace.Manager
 
     private void LateUpdate()
     {
-      if (!IsInitialized || _isCameraToPlayer)
+      if (_isCameraToPlayer)
       {
         return;
       }
@@ -81,6 +86,11 @@ namespace DefaultNamespace.Manager
         
         _isCameraToPlayer = true;
       }
+    }
+
+    private void SpawnPlayer (HeroPlayer obj)
+    {
+      _playerTransform = _playerController.Player.transform;
     }
   }
 }

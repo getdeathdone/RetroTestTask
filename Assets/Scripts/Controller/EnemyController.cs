@@ -86,7 +86,7 @@ namespace DefaultNamespace.Controller
     {
       foreach (var VARIABLE in Enemies)
       {
-        VARIABLE.SetActive(value);
+        VARIABLE.SetActive(!value);
       }
     }
 
@@ -130,8 +130,7 @@ namespace DefaultNamespace.Controller
 
       enemy.name = $"{enemyType} {index}";
       enemy.Initialize();
-      enemy.SetActive(true);
-
+      
       OnSpawnEnemy?.Invoke(enemy);
     }
     

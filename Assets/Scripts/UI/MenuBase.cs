@@ -8,17 +8,19 @@ namespace DefaultNamespace
   public class MenuBase : MonoBehaviour
   {
     [SerializeField]
+    private GameObject _panelParent;
+    
+    [SerializeField]
     private Button _openButton;
     [SerializeField]
-    private Button _closeButton;
-    [SerializeField]
-    private Button _restartGameButton;
+    protected Button _closeButton;
     [SerializeField]
     private Button _exitGameButton;
-    
-    private GameController _gameController;
-    private bool _isOpen;
+    [SerializeField]
+    protected Button _restartGameButton;
 
+    protected GameController _gameController;
+    private bool _isOpen;
     public bool IsOpen => _isOpen;
 
     [Inject]
@@ -44,10 +46,11 @@ namespace DefaultNamespace
       _restartGameButton.onClick.RemoveListener(RestartGame);
     }
 
-    protected virtual void OpenCloseMenu()
+    public virtual void OpenCloseMenu()
     {
       _isOpen = !IsOpen;
       _gameController.TogglePause();
+      _panelParent.SetActive(_isOpen);
     }
 
     private void RestartGame()
