@@ -7,7 +7,11 @@ namespace DefaultNamespace.Hero
 {
   public class HeroEnemy : HeroBase
   {
+    [SerializeField]
+    private LayerMask _playerMask;
+    public LayerMask PlayerMask => _playerMask;
     public override HeroSide Side => HeroSide.Enemy;
+
     private NavMeshAgent _navMeshAgent;
 
     private async void Start()

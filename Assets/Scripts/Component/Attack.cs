@@ -65,6 +65,12 @@ namespace DefaultNamespace.Component
       }
     }
 
+    public void AddStrength (int ricochetStrengthGain)
+    {
+      _strength += Mathf.Min(_strengthMax, _strength + ricochetStrengthGain);
+      OnUpdateVisual?.Invoke(StrengthPercentage);
+    }
+
     public void GetAttack (AttackType attackType = AttackType.None, Health target = null)
     {
       if (attackType == AttackType.None)
@@ -118,12 +124,6 @@ namespace DefaultNamespace.Component
     {
       ProjectileBase projectileBase = Object.Instantiate(_bullet, position, Quaternion.LookRotation(direction));
       projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this), target);
-    }
-
-    public void AddStrength (int ricochetStrengthGain)
-    {
-     _strength += Mathf.Min(_strengthMax, _strength + ricochetStrengthGain);
-     OnUpdateVisual?.Invoke(StrengthPercentage);
     }
 
     private bool ShouldProjectileRicochet()

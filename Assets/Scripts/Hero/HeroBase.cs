@@ -49,7 +49,7 @@ namespace DefaultNamespace.Hero
 
         if (component is IFixedUpdate fixedUpdate)
         {
-          _fixedUpdates.Add(fixedUpdate.GetType(), fixedUpdate);
+          _fixedUpdates.TryAdd(fixedUpdate.GetType(), fixedUpdate);
         }
       }
 
@@ -93,9 +93,9 @@ namespace DefaultNamespace.Hero
       OnCollisionEvent?.Invoke(false, other);
     }
     
-    public HeroBase FindTarget(float DETECTION_RANGE)
+    public HeroBase FindTarget(float DETECTION_RANGE, LayerMask targetLayer)
     {
-      Collider [] hitColliders = Physics.SphereCastAll(transform.position, DETECTION_RANGE, transform.forward).Select(hit => hit.collider).ToArray();
+      Collider[] hitColliders = Physics.SphereCastAll(transform.position, DETECTION_RANGE, transform.forward, float.PositiveInfinity, targetLayer).Select(hit => hit.collider).ToArray();
 
       foreach (Collider collider in hitColliders)
       {
@@ -110,6 +110,7 @@ namespace DefaultNamespace.Hero
 
       return null;
     }
+
 
     public void Death(DamageInfo damageInfo)
     {

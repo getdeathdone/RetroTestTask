@@ -28,7 +28,7 @@ namespace DefaultNamespace.Component.AI
 
       if (_shootTimer >= SHOOT_INTERVAL)
       {
-        HeroBase target = ComponentOwner.FindTarget(DETECTION_RANGE);
+        HeroBase target = ComponentOwner.FindTarget(DETECTION_RANGE, ((HeroEnemy)ComponentOwner).PlayerMask);
 
         if (target != null)
         {
@@ -40,9 +40,9 @@ namespace DefaultNamespace.Component.AI
 
           Health health = target.GetAttachedComponent<Health>();
           GetAttack(AttackType.Shoot, health);
+          
+          _shootTimer = 0f;
         }
-
-        _shootTimer = 0f;
       }
     }
   }

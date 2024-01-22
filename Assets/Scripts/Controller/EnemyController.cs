@@ -130,6 +130,11 @@ namespace DefaultNamespace.Controller
 
       enemy.name = $"{enemyType} {index}";
       enemy.Initialize();
+
+      if (!_gameController.IsPaused)
+      {
+        enemy.SetActive(true);
+      }
       
       OnSpawnEnemy?.Invoke(enemy);
     }

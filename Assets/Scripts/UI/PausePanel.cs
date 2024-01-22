@@ -1,4 +1,6 @@
+using System;
 using DefaultNamespace.Controller;
+using DefaultNamespace.Manager;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,13 +19,15 @@ namespace DefaultNamespace
     [SerializeField]
     private TextMeshProUGUI _gameStatus;
 
+    private InputManager _inputManager;
     private BattleController _battleController;
 
     [Inject]
     private void Construct(
-      BattleController battleController)
+      BattleController battleController, InputManager inputManager)
     {
       _battleController = battleController;
+      _inputManager = inputManager;
     }
 
     protected override void Awake()
@@ -32,6 +36,14 @@ namespace DefaultNamespace
 
       _startGame.onClick.AddListener(StartGame);
       _battleController.OnFinishBattle += FinishBattle;
+    }
+
+    private void Update()
+    {
+      if (_inputManager.Pause && !_gameController.IsStop)
+      {
+        OpenCloseMenu();
+      }
     }
 
     protected override void OnDestroy()

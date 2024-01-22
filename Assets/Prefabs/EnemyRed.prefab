@@ -131,6 +131,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 2
+  _playerMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!136 &5840965993671379799
 CapsuleCollider:
   m_ObjectHideFlags: 0

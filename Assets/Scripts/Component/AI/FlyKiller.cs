@@ -13,17 +13,17 @@ namespace DefaultNamespace.Component.AI
     private const float ATTACK_SPEED = 10f;
     private const float FLY_DURATION = 5f;
     private const float MAXIMUM_HEIGHT = 5f;
+    private const float BOOM_DISTANCE = 0.1f;
 
     private Transform _transform;
     private bool _isHovering;
     private float _startTime;
     private int _damage;
     private float _speed;
+    private Transform Transform => _transform;
 
     public override void Initialize()
     {
-      ComponentOwner.OnCollisionEvent += CollisionEvent;
-
       Rigidbody rigidbody = ComponentOwner.GetComponent<Rigidbody>();
 
       if (rigidbody != null)
@@ -55,11 +55,11 @@ namespace DefaultNamespace.Component.AI
       {
         if (elapsed < FLY_DURATION)
         {
-          Vector3 newPosition = _transform.position + Vector3.up * INITIAL_UPWARD_SPEED * Time.deltaTime;
+          Vector3 newPosition = Transform.position + Vector3.up * INITIAL_UPWARD_SPEED * Time.deltaTime;
 
           newPosition.y = Mathf.Min(newPosition.y, MAXIMUM_HEIGHT);
 
-          _transform.position = newPosition;
+          Transform.position = newPosition;
         } else
         {
           _isHovering = false;
@@ -70,40 +70,25 @@ namespace DefaultNamespace.Component.AI
         if (elapsed < HOVER_TIME)
         {} else
         {
-          HeroBase player = ComponentOwner.FindTarget(DETECTION_RANGE);
+          HeroBase player = ComponentOwner.FindTarget(DETECTION_RANGE, ((HeroEnemy)ComponentOwner).PlayerMask);
 
           if (player != null)
           {
-            Vector3 playerDirection = (player.transform.position - _transform.position).normalized;
-            _transform.Translate(playerDirection * (_speed * ATTACK_SPEED) * Time.deltaTime);
+            Vector3 playerDirection = (player.transform.position - Transform.position).normalized;
+            Transform.Translate(playerDirection * (_speed * ATTACK_SPEED) * Time.deltaTime);
+
+            var distanceToPlayer = Vector3.Distance(_transform.position, player.transform.position);
+
+            if (distanceToPlayer < BOOM_DISTANCE)
+            {
+              Health health = player.GetAttachedComponent<Health>();
+              GetAttack(AttackType.Lethal, health);
+              
+              ComponentOwner.Death();
+            }
           }
         }
       }
-    }
-
-    private void CollisionEvent (bool value, Collision other)
-    {
-      if (!value)
-      {
-        return;
-      }
-
-      if (!other.gameObject.TryGetComponent(out HeroBase heroBase))
-      {
-        return;
-      }
-
-      if (ComponentOwner.Side == heroBase.Side)
-      {
-        return;
-      }
-
-      ComponentOwner.OnCollisionEvent -= CollisionEvent;
-
-      Health health = heroBase.GetAttachedComponent<Health>();
-      GetAttack(AttackType.Shoot, health);
-      
-      ComponentOwner.Death();
     }
 
     public void GetAttack (AttackType attackType, Health target)

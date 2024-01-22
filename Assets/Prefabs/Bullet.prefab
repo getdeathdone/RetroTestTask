@@ -49,7 +49,7 @@ MonoBehaviour:
   _speed: 20
   _hittableLayers:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 375
   _capsuleCollider: {fileID: 3185325605588389750}
 --- !u!136 &3185325605588389750
 CapsuleCollider:

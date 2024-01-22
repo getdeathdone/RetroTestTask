@@ -27,6 +27,7 @@ namespace DefaultNamespace.Manager
     public float RotateHorizontal => GetRotateHorizontal();
 
     public bool Attack => PlatformManager.IS_MOBILE ? _uiManager.InputPanel.AttackButton : Input.GetKeyDown(KeyCode.Space);
+    public bool Pause => Input.GetKeyDown(KeyCode.Escape);
     public bool UltimateAttack => PlatformManager.IS_MOBILE ? _uiManager.InputPanel.AttackUltimateButton : Input.GetKeyDown(KeyCode.LeftAlt);
     
     public Type Type => GetType();
