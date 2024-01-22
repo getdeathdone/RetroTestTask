@@ -40,7 +40,9 @@ namespace DefaultNamespace.GameScene
     private void Awake()
     {
       _gameController.OnRestart += Restart;
-      InitializeScene();
+      _areaController.Initialize();
+      
+      _uiManager.Initialize();
     }
 
     private void Start()
@@ -51,25 +53,23 @@ namespace DefaultNamespace.GameScene
     private void OnDestroy()
     {
       _gameController.OnRestart -= Restart;
+      _areaController.Deinitialize();
+      
       Deinitialize();
     }
 
-    private void InitializeScene()
-    {
-      _uiManager.Initialize();
-    }
-    
     private void InitializeGame()
     {
       _playerController.Initialize();
       _enemyController.Initialize();
 
-      _areaController.Initialize();
       _cameraManager.Initialize();
       _battleController.Initialize();
       _achievementController.Initialize();
 
       _gameController.StartGame();
+      
+      _playerController.Player.SetActive(true);
     }
 
     private void Deinitialize()

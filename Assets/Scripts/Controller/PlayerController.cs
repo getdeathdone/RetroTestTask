@@ -1,3 +1,4 @@
+using System;
 using DefaultNamespace.Component;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
@@ -8,6 +9,8 @@ namespace DefaultNamespace.Controller
 {
   public class PlayerController : object, IInitialize, IDeinitialize
   {
+    public event Action<HeroPlayer> OnSpawnPlayer;
+    
     private HeroPlayer _player;
     public HeroPlayer Player => _player;
 
@@ -38,6 +41,7 @@ namespace DefaultNamespace.Controller
       if (_player == null)
       {
         _player = _spawnManager.SpawnPlayer();
+        OnSpawnPlayer?.Invoke(_player);
       }
 
       _player.GetAttachedComponent<Health>().OnUpdateVisual += _uiManager.HUDPanel.SetHealth;

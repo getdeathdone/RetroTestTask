@@ -75,6 +75,8 @@ namespace DefaultNamespace.Projectile
 
       foreach (var hit in hits)
       {
+        Debug.Log("Hit: " + hit.collider.gameObject.name);
+        
         if (IsHitValid(hit, out List<IDamagable> damagables) && hit.distance < closestHit.distance)
         {
           damagablesValid.AddRange(damagables);

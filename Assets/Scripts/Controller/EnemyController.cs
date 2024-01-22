@@ -45,11 +45,6 @@ namespace DefaultNamespace.Controller
       _gameController.OnPause += EnemyEnable;
       GenerateEnemy(GameConstants.Enemy.START_ENEMY_COUNT);
 
-      foreach (var VARIABLE in _enemies)
-      {
-        VARIABLE.Initialize();
-      }
-
       _currentSpawnInterval = GameConstants.Enemy.INITIAL_SPAWN_INTERVAL;
       _coroutine = _coroutineHandler.StartRoutine(SpawnEnemyRoutine());
       
@@ -123,7 +118,7 @@ namespace DefaultNamespace.Controller
 
     private void SpawnEnemy (HeroType enemyType)
     {
-      if (Enemies.Count == GameConstants.Enemy.MAX_ENEMY_COUNT)
+      if (Enemies.FindAll(x => x.gameObject.activeSelf).Count == GameConstants.Enemy.MAX_ENEMY_COUNT)
       {
         Debug.Log("MAX_ENEMY_COUNT");
         return;
@@ -134,7 +129,9 @@ namespace DefaultNamespace.Controller
       int index = _enemies.IndexOf(enemy);
 
       enemy.name = $"{enemyType} {index}";
-      
+      enemy.Initialize();
+      enemy.SetActive(true);
+
       OnSpawnEnemy?.Invoke(enemy);
     }
     

@@ -1,13 +1,17 @@
 using System;
+using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using Zenject;
 
 namespace DefaultNamespace.Controller
 {
-  public class AreaController : MonoBehaviour, IInitialize
+  public class AreaController : MonoBehaviour, IInitialize, IDeinitialize
   {
+    private const int MAX_ATTEMPTS = 30; 
+    
     [SerializeField]
     private float _offset;
     [SerializeField]
@@ -31,14 +35,33 @@ namespace DefaultNamespace.Controller
 
     public void Initialize()
     {
-      _playerController.Player.transform.position = GenerateRandomPositionInCircle(Radius);
-
-      foreach (var enemy in _enemyController.Enemies)
+      if (IsInitialized)
       {
-        enemy.transform.position = GenerateRandomPositionInCircle(Radius);
+        return;
       }
       
+      _enemyController.OnSpawnEnemy += SpawnEnemy;
+      _playerController.OnSpawnPlayer += SpawnEnemy;
+
       IsInitialized = true;
+    }
+
+    public void Deinitialize()
+    {
+      if (!IsInitialized)
+      {
+        return;
+      }
+      
+      _enemyController.OnSpawnEnemy -= SpawnEnemy;
+      _playerController.OnSpawnPlayer -= SpawnEnemy;
+      
+      IsInitialized = false;
+    }
+
+    private void SpawnEnemy (HeroBase obj)
+    {
+      obj.transform.position = GenerateRandomPositionInCircle(Radius);
     }
 
     private void Update()
@@ -113,28 +136,41 @@ namespace DefaultNamespace.Controller
 
     private Vector3 GenerateRandomPositionInCircle(float radius)
     {
-      float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-      float distance = UnityEngine.Random.Range(0f, radius);
+      Vector3 center = _sphereCollider.transform.position;
       
-      float spawnX = distance * Mathf.Cos(angle);
-      float spawnZ = distance * Mathf.Sin(angle);
+      for (int i = 0; i < MAX_ATTEMPTS; i++)
+      {
+        float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+        float distance = UnityEngine.Random.Range(0f, radius);
 
-      return new Vector3(spawnX, 0f, spawnZ);
+        float spawnX = center.x + distance * Mathf.Cos(angle);
+        float spawnZ = center.z + distance * Mathf.Sin(angle);
+
+        Vector3 randomPosition = new Vector3(spawnX, center.y, spawnZ);
+        
+        bool validPosition = NavMesh.SamplePosition(randomPosition, out NavMeshHit hit, radius, NavMesh.AllAreas);
+        
+        if (validPosition)
+        {
+          return hit.position;
+        }
+      }
+      
+      return center;
     }
-
-#if UNITY_EDITOR
-
-    private void OnDrawGizmos()
-    {
-      Handles.color = Color.yellow;
-      Handles.DrawWireDisc(CenterPoint, Vector3.up, Radius);
-    }
-#endif
 
     public bool IsInitialized
     {
       get;
       private set;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+      Handles.color = Color.yellow;
+      Handles.DrawWireDisc(CenterPoint, Vector3.up, Radius);
+    }
+#endif
   }
 }

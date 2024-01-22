@@ -86,6 +86,7 @@ namespace DefaultNamespace.Hero
     {
       _isAlive = false;
       OnDeath?.Invoke(damageInfo);
+      gameObject.SetActive(false);
     }
     
     public HeroBase SetActive (bool status)

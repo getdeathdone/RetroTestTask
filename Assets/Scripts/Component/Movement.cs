@@ -16,7 +16,7 @@ namespace DefaultNamespace.Component
     {
       _transform = ComponentOwner.transform;
       _inputManager = (ComponentOwner as HeroPlayer)?.InputManager;
-      _navMeshAgent = ComponentOwner.transform.GetComponent<NavMeshAgent>();
+      _navMeshAgent = ComponentOwner.GetComponentInChildren<NavMeshAgent>();
       _navMeshAgent.speed = (ComponentOwner as HeroPlayer)?.HeroData.Speed ?? 0f;
 
       IsInitialized = true;
@@ -53,7 +53,10 @@ namespace DefaultNamespace.Component
         movementDirection = _transform.TransformDirection(_inputManager.Direction);
       }
       
-      _navMeshAgent.Move(movementDirection * _navMeshAgent.speed * Time.fixedDeltaTime);
+      if(movementDirection != Vector3.zero)
+      {
+        _navMeshAgent.Move(movementDirection * _navMeshAgent.speed * Time.fixedDeltaTime);
+      }
     }
   }
 }
