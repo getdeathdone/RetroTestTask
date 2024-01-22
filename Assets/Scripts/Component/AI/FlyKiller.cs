@@ -70,11 +70,11 @@ namespace DefaultNamespace.Component.AI
         if (elapsed < HOVER_TIME)
         {} else
         {
-          Transform player = ComponentOwner.FindTarget(DETECTION_RANGE);
+          HeroBase player = ComponentOwner.FindTarget(DETECTION_RANGE);
 
           if (player != null)
           {
-            Vector3 playerDirection = (player.position - _transform.position).normalized;
+            Vector3 playerDirection = (player.transform.position - _transform.position).normalized;
             _transform.Translate(playerDirection * (_speed * ATTACK_SPEED) * Time.deltaTime);
           }
         }
@@ -101,7 +101,7 @@ namespace DefaultNamespace.Component.AI
       ComponentOwner.OnCollisionEvent -= CollisionEvent;
 
       Health health = heroBase.GetAttachedComponent<Health>();
-      GetAttack(AttackType.Normal, health);
+      GetAttack(AttackType.Shoot, health);
       
       ComponentOwner.Death();
     }

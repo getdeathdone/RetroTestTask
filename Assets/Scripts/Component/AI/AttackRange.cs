@@ -1,3 +1,4 @@
+using DefaultNamespace.Hero;
 using UnityEngine;
 
 namespace DefaultNamespace.Component.AI
@@ -27,18 +28,18 @@ namespace DefaultNamespace.Component.AI
 
       if (_shootTimer >= SHOOT_INTERVAL)
       {
-        Transform target = ComponentOwner.FindTarget(DETECTION_RANGE);
+        HeroBase target = ComponentOwner.FindTarget(DETECTION_RANGE);
 
         if (target != null)
         {
-          float distance = Vector3.Distance(_transform.position, target.position);
+          float distance = Vector3.Distance(_transform.position, target.transform.position);
           if (distance <= ATTACK_RANGE)
           {
             return;
           }
-          
-          Vector3 directionToPlayer = target.position - _transform.position;
-          Shoot(_transform.position, directionToPlayer.normalized, target);
+
+          Health health = target.GetAttachedComponent<Health>();
+          GetAttack(AttackType.Shoot, health);
         }
 
         _shootTimer = 0f;

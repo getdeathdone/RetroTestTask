@@ -19,7 +19,7 @@ namespace DefaultNamespace
   public enum AttackType
   {
     None,
-    Normal,
+    Shoot,
     Ricochet,
     Ultimate,
     Lethal

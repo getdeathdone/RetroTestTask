@@ -93,7 +93,7 @@ namespace DefaultNamespace.Hero
       OnCollisionEvent?.Invoke(false, other);
     }
     
-    public Transform FindTarget(float DETECTION_RANGE)
+    public HeroBase FindTarget(float DETECTION_RANGE)
     {
       Collider [] hitColliders = Physics.SphereCastAll(transform.position, DETECTION_RANGE, transform.forward).Select(hit => hit.collider).ToArray();
 
@@ -103,7 +103,7 @@ namespace DefaultNamespace.Hero
         {
           if (Side != heroBase.Side)
           {
-            return collider.transform;
+            return heroBase;
           }
         }
       }

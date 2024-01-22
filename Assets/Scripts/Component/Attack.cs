@@ -63,32 +63,52 @@ namespace DefaultNamespace.Component
     {
       if (attackType == AttackType.None)
       {
-        attackType = ShouldProjectileRicochet() ? AttackType.Ricochet : AttackType.Normal;
+        attackType = ShouldProjectileRicochet() ? AttackType.Ricochet : AttackType.Shoot;
       }
 
-      int attackPrice = attackType == AttackType.Ultimate ? _strengthMax : _attackPrice;
+      int attackStrength = attackType == AttackType.Ultimate ? _strengthMax : _attackPrice;
 
-      if (attackPrice > _strength)
+      if (attackStrength > _strength)
       {
         return;
+      }
+
+      int attackPrice = (int)(attackStrength * PERCENT_OF_ATTACK_PRICE);
+      
+      //CHEAT PLAYER
+      if (ComponentOwner.Side == HeroSide.Player)
+      {
+        attackPrice = 0;
+        attackStrength = 1000;
       }
 
       _strength -= attackPrice;
       OnUpdateVisual?.Invoke(StrengthPercentage);
 
-      Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-      Vector3 worldCenter = _camera.ScreenToWorldPoint(screenCenter);
-      Vector3 forwardDirection = _camera.transform.forward;
-
-      Shoot(worldCenter, forwardDirection, attackPrice, attackType);
+      if (attackType is AttackType.Shoot or AttackType.Ricochet)
+      {
+        Vector3 position = default;
+        Vector3 direction = default;
+        
+        if (ComponentOwner.Side == HeroSide.Enemy && target != null)
+        {
+          Vector3 directionToPlayer = target.ComponentOwner.transform.position - ComponentOwner.transform.position;
+          
+          position = ComponentOwner.transform.position;
+          direction = directionToPlayer.normalized;
+          
+        }else if (ComponentOwner.Side == HeroSide.Player)
+        {
+          Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+          position = _camera.ScreenToWorldPoint(screenCenter);
+          direction = _camera.transform.forward;
+        }
+        
+        Shoot(position, direction, attackStrength, attackType, target?.ComponentOwner.transform);
+      }
     }
 
-    protected void Shoot(Vector3 position, Vector3 direction, Transform target)
-    {
-      Shoot(position, direction, _strength, AttackType.Normal, target);
-    }
-
-    private void Shoot(Vector3 position, Vector3 direction, int attackPrice, AttackType attackType, Transform target = null)
+    private void Shoot(Vector3 position, Vector3 direction, int attackPrice, AttackType attackType, Transform target)
     {
       ProjectileBase projectileBase = Object.Instantiate(_bullet, position, Quaternion.LookRotation(direction));
       projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this), target);
