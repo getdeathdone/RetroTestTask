@@ -98,31 +98,34 @@ namespace DefaultNamespace.Manager
     {
       heroBase.AddComponent<Attack>();
       heroBase.AddComponent<Health>();
-      heroBase.AddComponent<Movement>();
-      
-      switch (heroType)
+
+      if (heroBase.Side == HeroSide.Player && heroType == HeroType.Player)
       {
-        case HeroType.Player:
-          BuildPlayer();
-          break;
-        
-        case HeroType.EnemyRed:
-        case HeroType.EnemyBlue:
-          BuildEnemy();
-          break;
-          
-        default:
-          throw new ArgumentOutOfRangeException(nameof(heroType), heroType, null);
+        BuildPlayer();
+      }else if (heroBase.Side == HeroSide.Enemy)
+      {
+        if (heroType == HeroType.EnemyBlue)
+        {
+          BuildEnemyBlue();
+        }else if (heroType == HeroType.EnemyRed)
+        {
+          BuildEnemyRed();
+        }
       }
 
       void BuildPlayer()
       {
-        
+        heroBase.AddComponent<Movement>();
       }
-
-      void BuildEnemy()
+      
+      void BuildEnemyBlue()
       {
         
+      }
+      
+      void BuildEnemyRed()
+      {
+        heroBase.AddComponent<FlyKiller>();
       }
     }
 

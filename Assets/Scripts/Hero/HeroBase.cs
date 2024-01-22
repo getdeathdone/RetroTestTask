@@ -11,7 +11,8 @@ namespace DefaultNamespace.Hero
   public abstract class HeroBase : MonoBehaviour, IInitialize
   {
     public event Action<DamageInfo> OnDeath;
-    
+    public event Action<bool, Collision> OnCollisionEvent;
+
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
     private readonly Dictionary<Type, IUpdate> _updates = new Dictionary<Type, IUpdate>();
     private readonly Dictionary<Type, IFixedUpdate> _fixedUpdates = new Dictionary<Type, IFixedUpdate>();
@@ -82,10 +83,26 @@ namespace DefaultNamespace.Hero
       }
     }
 
+    private void OnCollisionEnter (Collision other)
+    {
+      OnCollisionEvent?.Invoke(true, other);
+    }
+
+    private void OnCollisionExit (Collision other)
+    {
+      OnCollisionEvent?.Invoke(false, other);
+    }
+
     public void Death(DamageInfo damageInfo)
     {
       _isAlive = false;
       OnDeath?.Invoke(damageInfo);
+      gameObject.SetActive(false);
+    }
+    
+    public void Death()
+    {
+      _isAlive = false;
       gameObject.SetActive(false);
     }
     

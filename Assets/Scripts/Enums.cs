@@ -21,6 +21,7 @@ namespace DefaultNamespace
     None,
     Normal,
     Ricochet,
-    Ultimate
+    Ultimate,
+    Lethal
   }
 }
