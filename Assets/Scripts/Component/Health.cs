@@ -34,13 +34,14 @@ namespace DefaultNamespace.Component
       }
       
       _currentHealth -= attackInfo.Damage;
+      bool isDead = _currentHealth > 0;
 
-      DamageInfo info = new DamageInfo(attackInfo, this);
+      DamageInfo info = new DamageInfo(attackInfo, this, isDead);
       
       OnGetDamage?.Invoke(info);
       OnUpdateVisual?.Invoke(HealthPercentage);
 
-      if (_currentHealth > 0)
+      if (isDead)
       {
         return;
       }

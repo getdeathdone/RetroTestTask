@@ -1,6 +1,8 @@
 using System;
 using DefaultNamespace.Component;
+using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
+using DefaultNamespace.Manager;
 using UnityEngine;
 using Zenject;
 
@@ -14,15 +16,17 @@ namespace DefaultNamespace.Controller
     private readonly EnemyController _enemyController;
     private readonly PlayerController _playerController;
     private readonly GameController _gameController;
+    private readonly UIManager _uiManager;
 
     private int _playerKillCounter;
 
     [Inject]
-    public BattleController(EnemyController enemyController, PlayerController playerController, GameController gameController)
+    public BattleController(EnemyController enemyController, PlayerController playerController, GameController gameController, UIManager uiManager)
     {
       _playerController = playerController;
       _enemyController = enemyController;
       _gameController = gameController;
+      _uiManager = uiManager;
     }
 
     public void Initialize()
@@ -32,7 +36,7 @@ namespace DefaultNamespace.Controller
         return;
       }
 
-      Subscribe(true);
+      InitSubscribe(true);
 
       _playerKillCounter = 0;
       
@@ -46,20 +50,21 @@ namespace DefaultNamespace.Controller
         return;
       }
       
-      Subscribe(false);
+      InitSubscribe(false);
       
       IsInitialized = false;
+    }
+
+    private void GetDamage (DamageInfo obj)
+    {
+      _uiManager.HUDPanel.SpawnBattleInfoCard(obj);
     }
 
     private void OnDied (DamageInfo damageInfo)
     {
       var hero = ((Health)damageInfo.Receiver).ComponentOwner;
-      
-      if (hero.Side == HeroSide.None)
-      {
-        Debug.LogWarning("HeroSide.None");
-        return;
-      }
+
+      _uiManager.HUDPanel.SpawnBattleInfoCard(damageInfo, isDead: true);
       
       if (hero.Side == HeroSide.Player)
       {
@@ -80,7 +85,7 @@ namespace DefaultNamespace.Controller
         FinishBattle(true);
       }
     }
-    
+
     private void FinishBattle (bool win)
     {
       Deinitialize();
@@ -89,25 +94,40 @@ namespace DefaultNamespace.Controller
       
       _gameController.EndGame();
     }
-    
-    private void Subscribe (bool value)
+
+    private void InitSubscribe (bool isSubscribe)
     {
-      if (value)
+      if(isSubscribe)
       {
-        _playerController.Player.OnDeath += OnDied;
-        
-        foreach (var VARIABLE in _enemyController.Enemies)
-        {
-          VARIABLE.OnDeath += OnDied;
-        }
+        _enemyController.OnSpawnEnemy += SpawnSubscribe;
       } else
       {
-        _playerController.Player.OnDeath -= OnDied;
-        
-        foreach (var VARIABLE in _enemyController.Enemies)
-        {
-          VARIABLE.OnDeath -= OnDied;
-        }
+        _enemyController.OnSpawnEnemy -= SpawnSubscribe;
+      }
+      
+      Subscribe(isSubscribe, _playerController.Player);
+
+      foreach (var heroEnemy in _enemyController.Enemies)
+      {
+        Subscribe(isSubscribe, heroEnemy);
+      }
+    }
+
+    private void SpawnSubscribe (HeroBase heroBase)
+    {
+      Subscribe(true, heroBase);
+    }
+
+    private void Subscribe (bool isSubscribe, HeroBase heroBase)
+    {
+      if (isSubscribe)
+      {
+        heroBase.OnDeath += OnDied;
+        heroBase.GetAttachedComponent<Health>().OnGetDamage += GetDamage;
+      } else
+      {
+        heroBase.OnDeath -= OnDied;
+        heroBase.GetAttachedComponent<Health>().OnGetDamage -= GetDamage;
       }
     }
 
