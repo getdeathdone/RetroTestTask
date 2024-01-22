@@ -80,7 +80,17 @@ namespace DefaultNamespace.Component
       Vector3 worldCenter = _camera.ScreenToWorldPoint(screenCenter);
       Vector3 forwardDirection = _camera.transform.forward;
 
-      ProjectileBase projectileBase = Object.Instantiate(_bullet, worldCenter, Quaternion.LookRotation(forwardDirection));
+      Shoot(worldCenter, forwardDirection, attackPrice, attackType);
+    }
+
+    public void Shoot(Vector3 position, Vector3 direction)
+    {
+      Shoot(position, direction, _strength, AttackType.Normal);
+    }
+
+    private void Shoot(Vector3 position, Vector3 direction, int attackPrice, AttackType attackType)
+    {
+      ProjectileBase projectileBase = Object.Instantiate(_bullet, position, Quaternion.LookRotation(direction));
       projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this));
     }
 

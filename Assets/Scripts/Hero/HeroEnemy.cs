@@ -20,6 +20,17 @@ namespace DefaultNamespace.Hero
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, FlyKiller.DETECTION_RANGE);
       }
+
+      if (Type == HeroType.EnemyBlue)
+      {
+        // Draw detection range
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, AIRangeAttack.DETECTION_RANGE);
+
+        // Draw attack range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, AIRangeAttack.ATTACK_RANGE);
+      }
     }
 #endif
   }

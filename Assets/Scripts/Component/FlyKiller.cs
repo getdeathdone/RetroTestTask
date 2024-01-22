@@ -1,4 +1,3 @@
-using System.Linq;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
@@ -69,7 +68,7 @@ namespace DefaultNamespace.Component
         if (elapsed < HOVER_TIME)
         {} else
         {
-          Transform player = FindTarget();
+          Transform player = ComponentOwner.FindTarget(DETECTION_RANGE);
 
           if (player != null)
           {
@@ -78,24 +77,6 @@ namespace DefaultNamespace.Component
           }
         }
       }
-    }
-
-    private Transform FindTarget()
-    {
-      Collider [] hitColliders = Physics.SphereCastAll(_transform.position, DETECTION_RANGE, _transform.forward).Select(hit => hit.collider).ToArray();
-
-      foreach (Collider collider in hitColliders)
-      {
-        if (collider.TryGetComponent(out HeroBase heroBase))
-        {
-          if (ComponentOwner.Side != heroBase.Side)
-          {
-            return collider.transform;
-          }
-        }
-      }
-
-      return null;
     }
 
     private void CollisionEvent (bool value, Collision other)

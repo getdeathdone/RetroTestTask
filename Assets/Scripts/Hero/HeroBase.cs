@@ -92,6 +92,24 @@ namespace DefaultNamespace.Hero
     {
       OnCollisionEvent?.Invoke(false, other);
     }
+    
+    public Transform FindTarget(float DETECTION_RANGE)
+    {
+      Collider [] hitColliders = Physics.SphereCastAll(transform.position, DETECTION_RANGE, transform.forward).Select(hit => hit.collider).ToArray();
+
+      foreach (Collider collider in hitColliders)
+      {
+        if (collider.TryGetComponent(out HeroBase heroBase))
+        {
+          if (Side != heroBase.Side)
+          {
+            return collider.transform;
+          }
+        }
+      }
+
+      return null;
+    }
 
     public void Death(DamageInfo damageInfo)
     {

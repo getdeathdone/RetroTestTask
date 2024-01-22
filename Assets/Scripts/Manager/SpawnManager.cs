@@ -120,7 +120,7 @@ namespace DefaultNamespace.Manager
       
       void BuildEnemyBlue()
       {
-        
+        heroBase.AddComponent<AIRangeAttack>();
       }
       
       void BuildEnemyRed()
