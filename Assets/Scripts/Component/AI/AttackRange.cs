@@ -1,11 +1,11 @@
 using UnityEngine;
 
-namespace DefaultNamespace.Component
+namespace DefaultNamespace.Component.AI
 {
-  public class AIRangeAttack : Attack
+  public class AttackRange : Attack
   {
     public const float DETECTION_RANGE = 6f;
-    private const float SHOOT_INTERVAL = 1f;
+    private const float SHOOT_INTERVAL = 3f;
     public const float ATTACK_RANGE = 4f;
 
     private float _shootTimer;

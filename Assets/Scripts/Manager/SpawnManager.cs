@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
+using DefaultNamespace.Component.AI;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.ScriptableObjects;
@@ -120,7 +121,8 @@ namespace DefaultNamespace.Manager
       
       void BuildEnemyBlue()
       {
-        heroBase.AddComponent<AIRangeAttack>();
+        heroBase.AddComponent<AttackRange>();
+        heroBase.AddComponent<Navigation>();
       }
       
       void BuildEnemyRed()

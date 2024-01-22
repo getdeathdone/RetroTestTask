@@ -1,4 +1,5 @@
 using DefaultNamespace.Component;
+using DefaultNamespace.Component.AI;
 using UnityEngine;
 
 namespace DefaultNamespace.Hero
@@ -25,11 +26,11 @@ namespace DefaultNamespace.Hero
       {
         // Draw detection range
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, AIRangeAttack.DETECTION_RANGE);
+        Gizmos.DrawWireSphere(transform.position, AttackRange.DETECTION_RANGE);
 
         // Draw attack range
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, AIRangeAttack.ATTACK_RANGE);
+        Gizmos.DrawWireSphere(transform.position, AttackRange.ATTACK_RANGE);
       }
     }
 #endif

@@ -3,7 +3,7 @@ using DefaultNamespace.Interfaces;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace DefaultNamespace.Component
+namespace DefaultNamespace.Component.AI
 {
   public class FlyKiller : ComponentBase, IUpdate, IAttackable
   {
