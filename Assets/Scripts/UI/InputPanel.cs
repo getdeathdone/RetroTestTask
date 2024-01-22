@@ -1,18 +1,49 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DefaultNamespace
 {
   public class InputPanel : MonoBehaviour
   {
     [SerializeField]
-    private ButtonHold _attackButton;
+    private Button _attackButton;
     [SerializeField]
-    private ButtonHold _attackUltimateButton;
+    private Button _attackUltimateButton;
     [SerializeField]
     private VariableJoystick _variableJoystick;
 
-    public ButtonHold AttackButton => _attackButton;
-    public ButtonHold AttackUltimateButton => _attackUltimateButton;
+    private bool _attackUltimateButtonInvoke;
+    private bool _attackButtonInvoke;
+
+    public bool AttackButton => _attackButtonInvoke;
+    public bool AttackUltimateButton => _attackUltimateButtonInvoke;
     public VariableJoystick VariableJoystick => _variableJoystick;
+
+    private void Awake()
+    {
+      _attackButton.onClick.AddListener(OnAttackButtonClick);
+      _attackUltimateButton.onClick.AddListener(OnAttackUltimateButtonClick);
+    }
+
+    private void OnAttackButtonClick()
+    {
+      _attackButtonInvoke = true;
+      StartCoroutine(ResetButtonInvoke());
+    }
+
+    private void OnAttackUltimateButtonClick()
+    {
+      _attackUltimateButtonInvoke = true;
+      StartCoroutine(ResetButtonInvoke());
+    }
+
+    private IEnumerator ResetButtonInvoke()
+    {
+      yield return new WaitForEndOfFrame();
+      
+      _attackButtonInvoke = false;
+      _attackUltimateButtonInvoke = false;
+    }
   }
 }
