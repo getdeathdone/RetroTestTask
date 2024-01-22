@@ -11,6 +11,7 @@ namespace DefaultNamespace.Controller
   public class AreaController : MonoBehaviour, IInitialize, IDeinitialize
   {
     private const int MAX_ATTEMPTS = 30;
+    public static Action<Transform> OnTeleport;
 
     [SerializeField]
     private float _offsetTeleport;
@@ -83,6 +84,7 @@ namespace DefaultNamespace.Controller
       {
         moveAction?.Invoke(heroTransform);
         heroTransform.rotation = Quaternion.LookRotation((_sphereCollider.transform.position - heroTransform.transform.position).normalized);
+        OnTeleport?.Invoke(heroTransform);
       }
     }
 

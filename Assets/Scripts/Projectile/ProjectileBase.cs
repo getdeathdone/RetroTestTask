@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace.Component;
+using DefaultNamespace.Controller;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace DefaultNamespace.Projectile
 
     private bool _isShoot;
     private bool _isRicochet;
+    private bool _isDamageDisabled;
     private Vector3 _velocity;
     private Vector3 _lastPosition;
     private AttackInfo _attackInfo;
@@ -31,7 +33,21 @@ namespace DefaultNamespace.Projectile
 
     private void Awake()
     {
+      AreaController.OnTeleport += OnTeleport;
       Destroy(gameObject, MAX_LIFE_TIME);
+    }
+
+    private void OnDestroy()
+    {
+      AreaController.OnTeleport -= OnTeleport;
+    }
+
+    private void OnTeleport (Transform obj)
+    {
+      if (_targetTransform == obj)
+      {
+        _isDamageDisabled = true;
+      }
     }
 
     public void Shoot (AttackInfo attackInfo, Transform target = null)
@@ -132,6 +148,12 @@ namespace DefaultNamespace.Projectile
 
     private void OnHit (List<IDamagable> damagables)
     {
+      if (_isDamageDisabled)
+      {
+        Destroy(gameObject);
+        return;
+      }
+      
       foreach (var damagable in damagables)
       {
         damagable.GetDamage(_attackInfo);

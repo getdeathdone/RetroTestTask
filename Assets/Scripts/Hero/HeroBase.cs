@@ -115,7 +115,11 @@ namespace DefaultNamespace.Hero
     {
       _isAlive = false;
       OnDeath?.Invoke(damageInfo);
-      gameObject.SetActive(false);
+
+      if (Side == HeroSide.Enemy)
+      {
+        gameObject.SetActive(false);
+      }
     }
     
     public void Death()

@@ -69,7 +69,6 @@ namespace DefaultNamespace.Component.AI
       }
     }
 
-
     private void SetDestinationToNextPatrolPoint()
     {
       if (_patrolPoints != null && _patrolPoints.Length > 0)

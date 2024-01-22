@@ -41,7 +41,13 @@ namespace DefaultNamespace.Component
       
       _strength = ComponentOwner.HeroData.StrengthInit;
       _strengthMax = ComponentOwner.HeroData.StrengthMax;
-      _attackPrice = (int)(_strengthMax * PERCENT_OF_ATTACK_PRICE);
+      if(ComponentOwner.Side == HeroSide.Player)
+      {
+        _attackPrice = (int)(_strengthMax * PERCENT_OF_ATTACK_PRICE);
+      } else
+      {
+        _attackPrice = _strength;
+      }
       
       OnUpdateVisual?.Invoke(StrengthPercentage);
       
