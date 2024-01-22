@@ -90,15 +90,10 @@ namespace DefaultNamespace.Controller
     {
       Vector3 nearestEnemy = GetNearestEnemy(heroTransform.position);
 
-      heroTransform.position = GetSafePosition(nearestEnemy);
+      Vector3 direction = (heroTransform.position - nearestEnemy).normalized;
+      Vector3 safePosition = CenterPoint + direction * SpawnRadius;
 
-      Vector3 GetSafePosition (Vector3 enemyPosition)
-      {
-        Vector3 direction = (heroTransform.position - enemyPosition).normalized;
-        Vector3 safePosition = CenterPoint + direction * Radius;
-
-        return safePosition;
-      }
+      heroTransform.position = safePosition;
     }
 
     private Vector3 GetNearestEnemy (Vector3 positionPlayer)
