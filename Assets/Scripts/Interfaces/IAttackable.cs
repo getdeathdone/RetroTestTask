@@ -1,8 +1,11 @@
+using DefaultNamespace.Component;
+using UnityEngine;
+
 namespace DefaultNamespace.Interfaces
 {
   public interface IAttackable
   {
-    public void GetAttack(AttackType attackType);
+    public void GetAttack(AttackType attackType, Health target);
   }
   
   public class AttackInfo

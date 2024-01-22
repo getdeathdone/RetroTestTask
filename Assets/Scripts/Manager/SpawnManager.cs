@@ -96,7 +96,6 @@ namespace DefaultNamespace.Manager
 
     private void AdditionComponent (HeroType heroType, HeroBase heroBase)
     {
-      heroBase.AddComponent<Attack>();
       heroBase.AddComponent<Health>();
 
       if (heroBase.Side == HeroSide.Player && heroType == HeroType.Player)
@@ -115,6 +114,7 @@ namespace DefaultNamespace.Manager
 
       void BuildPlayer()
       {
+        heroBase.AddComponent<Attack>();
         heroBase.AddComponent<Movement>();
       }
       

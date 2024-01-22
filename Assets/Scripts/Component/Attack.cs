@@ -48,7 +48,7 @@ namespace DefaultNamespace.Component
       IsInitialized = true;
     }
 
-    public void Update()
+    public virtual void Update()
     {
       if (IsAttack)
       {
@@ -59,7 +59,7 @@ namespace DefaultNamespace.Component
       }
     }
 
-    public void GetAttack (AttackType attackType = AttackType.None)
+    public void GetAttack (AttackType attackType = AttackType.None, Health target = null)
     {
       if (attackType == AttackType.None)
       {
@@ -83,15 +83,15 @@ namespace DefaultNamespace.Component
       Shoot(worldCenter, forwardDirection, attackPrice, attackType);
     }
 
-    public void Shoot(Vector3 position, Vector3 direction)
+    protected void Shoot(Vector3 position, Vector3 direction, Transform target)
     {
-      Shoot(position, direction, _strength, AttackType.Normal);
+      Shoot(position, direction, _strength, AttackType.Normal, target);
     }
 
-    private void Shoot(Vector3 position, Vector3 direction, int attackPrice, AttackType attackType)
+    private void Shoot(Vector3 position, Vector3 direction, int attackPrice, AttackType attackType, Transform target = null)
     {
       ProjectileBase projectileBase = Object.Instantiate(_bullet, position, Quaternion.LookRotation(direction));
-      projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this));
+      projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this), target);
     }
 
     public void AddStrength (int ricochetStrengthGain)

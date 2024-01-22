@@ -27,15 +27,17 @@ namespace DefaultNamespace.Projectile
     private Vector3 _velocity;
     private Vector3 _lastPosition;
     private AttackInfo _attackInfo;
+    private Transform _targetTransform;
 
     private void Awake()
     {
       Destroy(gameObject, MAX_LIFE_TIME);
     }
 
-    public void Shoot (AttackInfo attackInfo)
+    public void Shoot (AttackInfo attackInfo, Transform target = null)
     {
       _attackInfo = attackInfo;
+      _targetTransform = target;
       
       _lastPosition = transform.position;
       _velocity = transform.forward * _speed;
@@ -58,6 +60,12 @@ namespace DefaultNamespace.Projectile
       if (!_isShoot)
       {
         return;
+      }
+      
+      if (_targetTransform != null)
+      {
+        Vector3 targetDirection = (_targetTransform.position - transform.position).normalized;
+        _velocity = targetDirection * _speed;
       }
       
       transform.position += _velocity * Time.deltaTime;

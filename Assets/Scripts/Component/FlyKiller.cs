@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 namespace DefaultNamespace.Component
 {
-  public class FlyKiller : ComponentBase, IUpdate
+  public class FlyKiller : ComponentBase, IUpdate, IAttackable
   {
     public const float DETECTION_RANGE = 10f;
     private const float INITIAL_UPWARD_SPEED = 5f;
@@ -99,9 +99,14 @@ namespace DefaultNamespace.Component
       ComponentOwner.OnCollisionEvent -= CollisionEvent;
 
       Health health = heroBase.GetAttachedComponent<Health>();
-      health.GetDamage(new AttackInfo(_damage, AttackType.Lethal, null));
-
+      GetAttack(AttackType.Normal, health);
+      
       ComponentOwner.Death();
+    }
+
+    public void GetAttack (AttackType attackType, Health target)
+    {
+      target?.GetDamage(new AttackInfo(_damage, attackType, this));
     }
   }
 }
