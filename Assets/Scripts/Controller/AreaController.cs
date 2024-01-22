@@ -10,23 +10,24 @@ namespace DefaultNamespace.Controller
 {
   public class AreaController : MonoBehaviour, IInitialize, IDeinitialize
   {
-    private const int MAX_ATTEMPTS = 30; 
-    
+    private const int MAX_ATTEMPTS = 30;
+
     [SerializeField]
-    private float _offset;
+    private float _offsetTeleport;
     [SerializeField]
     private SphereCollider _sphereCollider;
 
-    private float Radius => _sphereCollider.radius - _offset;
+    private float Radius => _sphereCollider.radius - _offsetTeleport;
+    private float SpawnRadius => Radius - _offsetTeleport;
     private Vector3 CenterPoint => _sphereCollider.center;
     public Type Type => GetType();
-    
+
     private EnemyController _enemyController;
     private PlayerController _playerController;
     private GameController _gameController;
 
     [Inject]
-    private void Construct(EnemyController enemyController, PlayerController playerController, GameController gameController)
+    private void Construct (EnemyController enemyController, PlayerController playerController, GameController gameController)
     {
       _enemyController = enemyController;
       _playerController = playerController;
@@ -39,9 +40,9 @@ namespace DefaultNamespace.Controller
       {
         return;
       }
-      
-      _enemyController.OnSpawnEnemy += SpawnEnemy;
-      _playerController.OnSpawnPlayer += SpawnEnemy;
+
+      _enemyController.OnSpawnEnemy += GeneratePosition;
+      _playerController.OnSpawnPlayer += GeneratePosition;
 
       IsInitialized = true;
     }
@@ -52,16 +53,16 @@ namespace DefaultNamespace.Controller
       {
         return;
       }
-      
-      _enemyController.OnSpawnEnemy -= SpawnEnemy;
-      _playerController.OnSpawnPlayer -= SpawnEnemy;
-      
+
+      _enemyController.OnSpawnEnemy -= GeneratePosition;
+      _playerController.OnSpawnPlayer -= GeneratePosition;
+
       IsInitialized = false;
     }
 
-    private void SpawnEnemy (HeroBase obj)
+    private void GeneratePosition (HeroBase obj)
     {
-      obj.transform.position = GenerateRandomPositionInCircle(Radius);
+      obj.transform.position = GenerateRandomPositionInCircle(SpawnRadius);
     }
 
     private void Update()
@@ -70,43 +71,28 @@ namespace DefaultNamespace.Controller
       {
         return;
       }
-      
-      CheckNearEdge(_playerController.Player.transform, MoveAwayFromEnemies);
 
-      foreach (var enemy in _enemyController.Enemies)
-      {
-        CheckNearEdge(enemy.transform, ClampMovementToBounds);
-      }
+      CheckNearEdge(_playerController.Player.transform, MoveAwayFromEnemies);
     }
 
-    private void CheckNearEdge(Transform heroTransform, Action<Transform> moveAction)
+    private void CheckNearEdge (Transform heroTransform, Action<Transform> moveAction)
     {
       float distanceToCenter = Vector3.Distance(heroTransform.position, CenterPoint);
 
       if (distanceToCenter > Radius)
       {
         moveAction?.Invoke(heroTransform);
+        heroTransform.rotation = Quaternion.LookRotation((_sphereCollider.transform.position - heroTransform.transform.position).normalized);
       }
     }
 
-    private void ClampMovementToBounds(Transform heroTransform)
-    {
-      Vector3 normalizedDirection = (heroTransform.position - CenterPoint).normalized;
-      Vector3 newPosition = CenterPoint + normalizedDirection * Radius;
-        
-      newPosition.x = Mathf.Clamp(newPosition.x, CenterPoint.x - Radius, CenterPoint.x + Radius);
-      newPosition.z = Mathf.Clamp(newPosition.z, CenterPoint.z - Radius, CenterPoint.z + Radius);
-        
-      heroTransform.position = newPosition;
-    }
-
-    private void MoveAwayFromEnemies(Transform heroTransform)
+    private void MoveAwayFromEnemies (Transform heroTransform)
     {
       Vector3 nearestEnemy = GetNearestEnemy(heroTransform.position);
-      
+
       heroTransform.position = GetSafePosition(nearestEnemy);
-      
-      Vector3 GetSafePosition(Vector3 enemyPosition)
+
+      Vector3 GetSafePosition (Vector3 enemyPosition)
       {
         Vector3 direction = (heroTransform.position - enemyPosition).normalized;
         Vector3 safePosition = CenterPoint + direction * Radius;
@@ -115,7 +101,7 @@ namespace DefaultNamespace.Controller
       }
     }
 
-    private Vector3 GetNearestEnemy(Vector3 positionPlayer)
+    private Vector3 GetNearestEnemy (Vector3 positionPlayer)
     {
       Vector3 nearestEnemy = default;
       float minDistance = float.MaxValue;
@@ -124,7 +110,7 @@ namespace DefaultNamespace.Controller
       {
         float distance = Vector3.Distance(positionPlayer, enemy.transform.position);
 
-        if (distance < minDistance)
+        if (distance < minDistance && distance < SpawnRadius)
         {
           minDistance = distance;
           nearestEnemy = enemy.transform.position;
@@ -134,10 +120,11 @@ namespace DefaultNamespace.Controller
       return nearestEnemy;
     }
 
-    private Vector3 GenerateRandomPositionInCircle(float radius)
+
+    private Vector3 GenerateRandomPositionInCircle (float radius)
     {
       Vector3 center = _sphereCollider.transform.position;
-      
+
       for (int i = 0; i < MAX_ATTEMPTS; i++)
       {
         float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
@@ -147,15 +134,15 @@ namespace DefaultNamespace.Controller
         float spawnZ = center.z + distance * Mathf.Sin(angle);
 
         Vector3 randomPosition = new Vector3(spawnX, center.y, spawnZ);
-        
+
         bool validPosition = NavMesh.SamplePosition(randomPosition, out NavMeshHit hit, radius, NavMesh.AllAreas);
-        
+
         if (validPosition)
         {
           return hit.position;
         }
       }
-      
+
       return center;
     }
 

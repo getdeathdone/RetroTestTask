@@ -36,7 +36,7 @@ namespace DefaultNamespace
       public const int RED_ENEMY_RATIO = 4;
     
       public const int MAX_ENEMY_COUNT = 30;
-      public const int START_ENEMY_COUNT = 5;
+      public const int START_ENEMY_COUNT = 3;
     
       public const float INITIAL_SPAWN_INTERVAL = 30f;
       public const float MIN_SPAWN_INTERVAL = 6.0f;

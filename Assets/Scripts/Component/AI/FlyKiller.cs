@@ -18,6 +18,7 @@ namespace DefaultNamespace.Component.AI
     private bool _isHovering;
     private float _startTime;
     private int _damage;
+    private float _speed;
 
     public override void Initialize()
     {
@@ -41,6 +42,7 @@ namespace DefaultNamespace.Component.AI
       _startTime = Time.time;
       _transform = ComponentOwner.transform;
       _damage = ComponentOwner.HeroData.StrengthInit;
+      _speed = ComponentOwner.HeroData != null ? ComponentOwner.HeroData.Speed : 0f;
 
       IsInitialized = true;
     }
@@ -73,7 +75,7 @@ namespace DefaultNamespace.Component.AI
           if (player != null)
           {
             Vector3 playerDirection = (player.position - _transform.position).normalized;
-            _transform.Translate(playerDirection * ATTACK_SPEED * Time.deltaTime);
+            _transform.Translate(playerDirection * (_speed * ATTACK_SPEED) * Time.deltaTime);
           }
         }
       }

@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e719a077f9f4ecd82ff62ce09e28102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _offset: 0.15
+  _offsetTeleport: 0.5
   _sphereCollider: {fileID: 7087475406872412128}
 --- !u!135 &7087475406872412128
 SphereCollider:
