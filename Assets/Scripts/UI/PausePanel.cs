@@ -64,7 +64,6 @@ namespace DefaultNamespace
       
       _startGame.gameObject.SetActive(false);
       _restartGameButton.gameObject.SetActive(true);
-      _closeButton.gameObject.SetActive(true);
     }
 
     private void FinishBattle (bool obj)
@@ -79,6 +78,8 @@ namespace DefaultNamespace
       {
         _gameStatus.text = PAUSE;
       }
+      
+      _closeButton.gameObject.SetActive(!_gameController.IsStop);
       
       base.OpenCloseMenu();
     }
