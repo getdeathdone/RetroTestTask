@@ -36,6 +36,8 @@ namespace DefaultNamespace.GameScene
 
     private void Awake()
     {
+      Application.targetFrameRate = 60;
+      
       _gameController.OnRestart += Restart;
       _areaController.Initialize();
       

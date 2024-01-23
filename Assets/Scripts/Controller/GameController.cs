@@ -18,6 +18,8 @@ namespace DefaultNamespace.Controller
     {
       _isPaused = !_isPaused;
       OnPause?.Invoke(IsPaused);
+      
+      Time.timeScale = _isPaused ? 0 : 1;
       Cursor.lockState = _isPaused ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
