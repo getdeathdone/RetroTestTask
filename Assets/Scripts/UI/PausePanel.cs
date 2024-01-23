@@ -1,4 +1,3 @@
-using System;
 using DefaultNamespace.Controller;
 using DefaultNamespace.Manager;
 using TMPro;
@@ -15,12 +14,16 @@ namespace DefaultNamespace
     private const string PAUSE = "Pause";
 
     [SerializeField]
+    private GameObject _keyMap;
+    [SerializeField]
     private Button _startGame;
     [SerializeField]
     private TextMeshProUGUI _gameStatus;
 
     private InputManager _inputManager;
     private BattleController _battleController;
+
+    public GameObject KeyMap => _keyMap;
 
     [Inject]
     private void Construct(

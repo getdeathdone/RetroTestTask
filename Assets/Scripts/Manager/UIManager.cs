@@ -18,6 +18,7 @@ namespace DefaultNamespace.Manager
     public void Initialize()
     {
       InputPanel.gameObject.SetActive(PlatformManager.IS_MOBILE);
+      PausePanel.KeyMap.SetActive(!PlatformManager.IS_MOBILE);
 
       IsInitialized = true;
     }
