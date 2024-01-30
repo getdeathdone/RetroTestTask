@@ -12,9 +12,7 @@ namespace DefaultNamespace
     private const string VICTORY = "Victory";
     private const string LOSS = "Loss";
     private const string PAUSE = "Pause";
-
-    [SerializeField]
-    private GameObject _keyMap;
+    
     [SerializeField]
     private Button _startGame;
     [SerializeField]
@@ -22,9 +20,7 @@ namespace DefaultNamespace
 
     private InputManager _inputManager;
     private BattleController _battleController;
-
-    public GameObject KeyMap => _keyMap;
-
+    
     [Inject]
     private void Construct(
       BattleController battleController, InputManager inputManager)

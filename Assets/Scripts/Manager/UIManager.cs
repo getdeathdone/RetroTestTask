@@ -9,16 +9,13 @@ namespace DefaultNamespace.Manager
     private InputPanel _inputPanel;
     [SerializeField]
     private PausePanel _pausePanel;
-    [SerializeField]
-    private HUDPanel _hudPanel;
+    
     public InputPanel InputPanel => _inputPanel;
     public PausePanel PausePanel => _pausePanel;
-    public HUDPanel HUDPanel => _hudPanel;
 
     public void Initialize()
     {
       InputPanel.gameObject.SetActive(PlatformManager.IS_MOBILE);
-      PausePanel.KeyMap.SetActive(!PlatformManager.IS_MOBILE);
 
       IsInitialized = true;
     }
