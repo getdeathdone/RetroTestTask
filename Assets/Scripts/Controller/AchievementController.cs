@@ -89,21 +89,23 @@ namespace DefaultNamespace.Controller
 
     private void Subscribe (bool value)
     {
+      var playerHealth = _playerController.Player.GetAttachedComponent<Health>();
+      
       if (value)
       {
-        _playerController.Player.OnDeath += OnDied;
+        playerHealth.OnDeath += OnDied;
         
-        foreach (var VARIABLE in _enemyController.Enemies)
+        foreach (var variable in _enemyController.Enemies)
         {
-          VARIABLE.OnDeath += OnDied;
+          variable.GetAttachedComponent<Health>().OnDeath += OnDied;
         }
       } else
       {
-        _playerController.Player.OnDeath -= OnDied;
+        playerHealth.OnDeath -= OnDied;
         
-        foreach (var VARIABLE in _enemyController.Enemies)
+        foreach (var variable in _enemyController.Enemies)
         {
-          VARIABLE.OnDeath -= OnDied;
+          variable.GetAttachedComponent<Health>().OnDeath -= OnDied;
         }
       }
     }

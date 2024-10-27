@@ -4,15 +4,17 @@ using UnityEngine;
 
 namespace DefaultNamespace.Component
 {
-  public class Health : ComponentBase, IDamagable, IUpdateVisual
+  public class Health : ComponentBase, IDamagable, IDeath, IUpdateVisual
   {
     private const int LOW_HEALTH_PERCENTAGE = 15;
     public event Action<DamageInfo> OnGetDamage;
+    public event Action<DamageInfo> OnDeath;
     public event Action<float> OnUpdateVisual;
-    
+
+    private bool _isAlive;
     private int _currentHealth;
     private int _maxHealth;
-    
+    public bool IsAlive => _isAlive;
     public int MaxHealth => _maxHealth;
     public int CurrentHealth => _currentHealth;
     private float HealthPercentage => (float)_currentHealth / MaxHealth;
@@ -23,12 +25,13 @@ namespace DefaultNamespace.Component
       _currentHealth = _maxHealth;
       
       OnUpdateVisual?.Invoke(HealthPercentage);
+      _isAlive = true;
       IsInitialized = true;
     }
 
     public void GetDamage (AttackInfo attackInfo)
     {
-      if (!ComponentOwner.IsAlive)
+      if (!IsAlive)
       {
         return;
       }
@@ -46,7 +49,7 @@ namespace DefaultNamespace.Component
         return;
       }
 
-      ComponentOwner.Death(info);
+      Death(info);
     }
     
     public bool IsLowHealth()
@@ -59,6 +62,17 @@ namespace DefaultNamespace.Component
     {
       _currentHealth = Mathf.Min(MaxHealth, _currentHealth += healthToRestore);
       OnUpdateVisual?.Invoke(HealthPercentage);
+    }
+
+    public void Death(DamageInfo damageInfo)
+    {
+      _isAlive = false;
+      OnDeath?.Invoke(damageInfo);
+
+      if (ComponentOwner.Side == HeroSide.Enemy)
+      {
+        ComponentOwner.SetActive(false);
+      }
     }
   }
 }

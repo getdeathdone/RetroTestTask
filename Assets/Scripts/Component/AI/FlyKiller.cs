@@ -84,7 +84,7 @@ namespace DefaultNamespace.Component.AI
               Health health = player.GetAttachedComponent<Health>();
               GetAttack(AttackType.Lethal, health);
               
-              ComponentOwner.Death();
+              ComponentOwner.SetActive(false);
             }
           }
         }

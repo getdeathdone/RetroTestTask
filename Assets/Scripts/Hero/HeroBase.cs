@@ -10,7 +10,6 @@ namespace DefaultNamespace.Hero
 {
   public abstract class HeroBase : MonoBehaviour, IInitialize
   {
-    public event Action<DamageInfo> OnDeath;
     public event Action<bool, Collision> OnCollisionEvent;
 
     private readonly List<ComponentBase> _componentsMap = new List<ComponentBase>();
@@ -20,11 +19,9 @@ namespace DefaultNamespace.Hero
     [SerializeField]
     private HeroType _type;
     
-    private bool _isAlive;
     private bool _isActive;
     private HeroData _heroData;
     
-    public bool IsAlive => _isAlive;
     public bool IsActive => _isActive;
     public HeroData HeroData => _heroData;
     public HeroType Type => _type;
@@ -52,8 +49,7 @@ namespace DefaultNamespace.Hero
           _fixedUpdates.TryAdd(fixedUpdate.GetType(), fixedUpdate);
         }
       }
-
-      _isAlive = true;
+      
       IsInitialized = true;
     }
 
@@ -111,28 +107,10 @@ namespace DefaultNamespace.Hero
       return null;
     }
 
-
-    public void Death(DamageInfo damageInfo)
-    {
-      _isAlive = false;
-      OnDeath?.Invoke(damageInfo);
-
-      if (Side == HeroSide.Enemy)
-      {
-        gameObject.SetActive(false);
-      }
-    }
-    
-    public void Death()
-    {
-      _isAlive = false;
-      gameObject.SetActive(false);
-    }
-    
     public HeroBase SetActive (bool status)
     {
       _isActive = status;
-
+      gameObject.SetActive(status);
       return this;
     }
 

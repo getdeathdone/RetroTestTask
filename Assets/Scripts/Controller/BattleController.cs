@@ -118,14 +118,16 @@ namespace DefaultNamespace.Controller
 
     private void Subscribe (bool isSubscribe, HeroBase heroBase)
     {
+      var health = heroBase.GetAttachedComponent<Health>();
+      
       if (isSubscribe)
       {
-        heroBase.OnDeath += OnDied;
-        heroBase.GetAttachedComponent<Health>().OnGetDamage += GetDamage;
+        health.OnDeath += OnDied;
+        health.OnGetDamage += GetDamage;
       } else
       {
-        heroBase.OnDeath -= OnDied;
-        heroBase.GetAttachedComponent<Health>().OnGetDamage -= GetDamage;
+        health.OnDeath -= OnDied;
+        health.OnGetDamage -= GetDamage;
       }
     }
 
