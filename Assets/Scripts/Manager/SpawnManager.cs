@@ -32,22 +32,22 @@ namespace DefaultNamespace.Manager
       _inputManager = inputManager;
     }
 
-    public HeroPlayer SpawnPlayer()
+    public HeroBase Spawn(HeroType heroType)
     {
-      var player = SpawnHero(HeroType.Player);
-      player.name = $"{player.Type}";
-
-      return (HeroPlayer)player;
-    }
-
-    public HeroEnemy SpawnEnemy (HeroType enemyType)
-    {
-      if (enemyType == HeroType.Player)
+      if(heroType == HeroType.Player)
       {
-        return null;
+        var player = SpawnHero(HeroType.Player);
+        player.name = $"{player.Type}";
+        
+        return (HeroPlayer)player;
       }
-      
-      return (HeroEnemy)SpawnHero(enemyType);
+
+      if (heroType is HeroType.EnemyBlue or HeroType.EnemyRed)
+      {
+        return (HeroEnemy)SpawnHero(heroType);
+      }
+
+      return null;
     }
 
     private HeroBase SpawnHero (HeroType heroType)

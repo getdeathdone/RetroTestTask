@@ -40,7 +40,7 @@ namespace DefaultNamespace.Controller
       
       if (_player == null)
       {
-        _player = _spawnManager.SpawnPlayer();
+        _player = _spawnManager.Spawn(HeroType.Player) as HeroPlayer;
         OnSpawnPlayer?.Invoke(_player);
       }
 

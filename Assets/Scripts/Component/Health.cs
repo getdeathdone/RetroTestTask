@@ -44,11 +44,6 @@ namespace DefaultNamespace.Component
       OnGetDamage?.Invoke(info);
       OnUpdateVisual?.Invoke(HealthPercentage);
 
-      if (isDead)
-      {
-        return;
-      }
-
       Death(info);
     }
     

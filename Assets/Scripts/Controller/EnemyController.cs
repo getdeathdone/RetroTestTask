@@ -124,7 +124,7 @@ namespace DefaultNamespace.Controller
         return;
       }
 
-      var enemy = _spawnManager.SpawnEnemy(enemyType);
+      var enemy = _spawnManager.Spawn(enemyType) as HeroEnemy;
       _enemies.Add(enemy);
       int index = _enemies.IndexOf(enemy);
 

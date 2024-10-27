@@ -1,11 +1,11 @@
 using System;
+using DefaultNamespace.Calculator;
 using DefaultNamespace.Hero;
 using DefaultNamespace.Interfaces;
 using DefaultNamespace.Manager;
 using DefaultNamespace.Projectile;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Component
 {
@@ -13,18 +13,16 @@ namespace DefaultNamespace.Component
   {
     public event Action<float> OnUpdateVisual;
     
-    private const float RICOCHET_CHANCE_LOW_HEALTH = 1.0f;
-    private const float NORMAL_RICOCHET_CHANCE = 0.1f;
     private const float PERCENT_OF_ATTACK_PRICE = 0.1f;
 
     private int _strength;
     private int _strengthMax;
     private int _attackPrice;
     private Camera _camera;
-    private Health _health;
     private ProjectileBase _bullet;
     private InputManager _inputManager;
-    private bool IsLowHealth => _health.IsLowHealth();
+    private RicochetCalculator _ricochetCalculator;
+
     private float StrengthPercentage => (float)_strength / _strengthMax;
     private bool IsInputManagerAvailable => _inputManager != null;
     private bool IsAttack => IsInputManagerAvailable ? _inputManager.Attack : false;
@@ -36,8 +34,8 @@ namespace DefaultNamespace.Component
       _camera = Camera.main;
 
       _bullet = ComponentOwner.HeroData.Bullet;
-      _health = ComponentOwner.GetAttachedComponent<Health>();
       _inputManager = (ComponentOwner as HeroPlayer)?.InputManager;
+      _ricochetCalculator = new RicochetCalculator(ComponentOwner.GetAttachedComponent<Health>());
       
       _strength = ComponentOwner.HeroData.StrengthInit;
       _strengthMax = ComponentOwner.HeroData.StrengthMax;
@@ -75,7 +73,7 @@ namespace DefaultNamespace.Component
     {
       if (attackType == AttackType.None)
       {
-        attackType = ShouldProjectileRicochet() ? AttackType.Ricochet : AttackType.Shoot;
+        attackType = _ricochetCalculator.ShouldProjectileRicochet() ? AttackType.Ricochet : AttackType.Shoot;
       }
 
       int attackStrength = attackType == AttackType.Ultimate ? _strengthMax : _attackPrice;
@@ -124,12 +122,6 @@ namespace DefaultNamespace.Component
     {
       ProjectileBase projectileBase = Object.Instantiate(_bullet, position, Quaternion.LookRotation(direction));
       projectileBase.Shoot(new AttackInfo(attackPrice, attackType, this), target);
-    }
-
-    private bool ShouldProjectileRicochet()
-    {
-      float ricochetChance = IsLowHealth ? RICOCHET_CHANCE_LOW_HEALTH : NORMAL_RICOCHET_CHANCE;
-      return Random.Range(0f, 1f) <= ricochetChance;
     }
   }
 }
